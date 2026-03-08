@@ -1,0 +1,25 @@
+# 依赖包
+node_modules/
+/jspm_packages/
+
+# 编译输出 (Build outputs)
+/dist/
+/out/
+/.next/
+/.nuxt/
+
+# 环境变量与私密信息
+.env
+.env.local
+.env.development.local
+
+# 日志文件
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+
+# 系统/编辑器相关
+.DS_Store
+.vscode/
+.idea/

@@ -1,0 +1,209 @@
+import { Clock } from 'lucide-react';
+import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ScatterChart, Scatter } from 'recharts';
+import { useTimeRange } from '../contexts/TimeRangeContext';
+import { useLanguage } from '../contexts/LanguageContext';
+
+// Mock data for 24H heatmap
+const heatmapData = [
+  { hour: '00', count: 11 },
+  { hour: '01', count: 16 },
+  { hour: '02', count: 1 },
+  { hour: '03', count: 2 },
+  { hour: '04', count: 0 },
+  { hour: '05', count: 0 },
+  { hour: '06', count: 0 },
+  { hour: '07', count: 2 },
+  { hour: '08', count: 1 },
+  { hour: '09', count: 1 },
+  { hour: '10', count: 11 },
+  { hour: '11', count: 0 },
+  { hour: '12', count: 0 },
+  { hour: '13', count: 0 },
+  { hour: '14', count: 3 },
+  { hour: '15', count: 5 },
+  { hour: '16', count: 27 },
+  { hour: '17', count: 11 },
+  { hour: '18', count: 10 },
+  { hour: '19', count: 3 },
+  { hour: '20', count: 17 },
+  { hour: '21', count: 14 },
+  { hour: '22', count: 7 },
+  { hour: '23', count: 1 },
+];
+
+// Mock trend data
+const trendData = Array.from({ length: 28 }, (_, i) => ({
+  day: i + 1,
+  price: 100000 + Math.random() * 50000,
+  volume: Math.floor(Math.random() * 15000) + 5000,
+}));
+
+// Mock transaction scatter data
+const transactionData = Array.from({ length: 80 }, (_, i) => ({
+  day: Math.floor(i / 3) + 1,
+  price: 8000 + Math.random() * 12000,
+  size: Math.random() * 100 + 20,
+}));
+
+export function Activity() {
+  const { t } = useLanguage();
+  
+  return (
+    <div className="space-y-4">
+      {/* 24H Heatmap */}
+      <div className="bg-white rounded-2xl p-4 shadow-lg">
+        <h3 className="text-sm font-semibold mb-3 text-gray-700">{t('activity.heatmap')}</h3>
+        <div className="grid grid-cols-12 gap-1 mb-3">
+          {heatmapData.map((item) => (
+            <div
+              key={item.hour}
+              className="aspect-square rounded flex flex-col items-center justify-center text-xs"
+              style={{
+                backgroundColor:
+                  item.count === 0
+                    ? '#fef3c7'
+                    : item.count < 5
+                    ? '#fed7aa'
+                    : item.count < 10
+                    ? '#fdba74'
+                    : item.count < 15
+                    ? '#fb923c'
+                    : '#f97316',
+                color: item.count >= 10 ? 'white' : '#92400e',
+              }}
+            >
+              <span className="font-bold">{item.count}</span>
+            </div>
+          ))}
+        </div>
+        <div className="grid grid-cols-12 gap-1 text-[9px] text-gray-500 text-center">
+          {heatmapData.map((item) => (
+            <div key={item.hour}>{item.hour}</div>
+          ))}
+        </div>
+      </div>
+
+      {/* Peak Time */}
+      <div className="bg-gradient-to-br from-orange-500 to-orange-600 text-white rounded-2xl p-6 shadow-lg">
+        <div className="text-xs mb-2 opacity-90">高峰交易时间 PEAK TIME</div>
+        {/* <div className="text-5xl font-black mb-2">{peakHour.hour}:00</div> */}
+        <div className="text-sm">
+          {/* 共成交 <span className="font-bold text-xl">{peakHour.count}</span> 笔 */}
+        </div>
+        <div className="text-xs mt-2 opacity-75">该时段最活跃，共约占当日总量 4.5 倍</div>
+      </div>
+
+      {/* Transaction Trend */}
+      <div className="bg-white rounded-2xl p-4 shadow-lg">
+        <h3 className="text-sm font-semibold mb-3 text-gray-700">交易趋势分析 TREND</h3>
+        <ResponsiveContainer width="100%" height={200}>
+          <BarChart data={trendData}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+            <XAxis dataKey="day" tick={{ fontSize: 10 }} />
+            <YAxis tick={{ fontSize: 10 }} />
+            <Tooltip />
+            <Bar dataKey="volume" fill="#fdba74" radius={[4, 4, 0, 0]} />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+
+      {/* Volume & Price Dual Chart */}
+      <div className="bg-white rounded-2xl p-4 shadow-lg">
+        <h3 className="text-sm font-semibold mb-3 text-gray-700">成交量与地板价趋势</h3>
+        <ResponsiveContainer width="100%" height={200}>
+          <LineChart data={trendData}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+            <XAxis dataKey="day" tick={{ fontSize: 10 }} />
+            <YAxis yAxisId="left" tick={{ fontSize: 10 }} />
+            <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 10 }} />
+            <Tooltip />
+            <Line
+              yAxisId="left"
+              type="monotone"
+              dataKey="volume"
+              stroke="#fb923c"
+              strokeWidth={2}
+              name="成交量"
+              dot={false}
+            />
+            <Line
+              yAxisId="right"
+              type="monotone"
+              dataKey="price"
+              stroke="#fdba74"
+              strokeWidth={2}
+              name="地板价"
+              dot={false}
+            />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+
+      {/* Transaction Distribution */}
+      <div className="bg-white rounded-2xl p-4 shadow-lg">
+        <h3 className="text-sm font-semibold mb-3 text-gray-700">交易分布</h3>
+        <ResponsiveContainer width="100%" height={250}>
+          <ScatterChart margin={{ top: 10, right: 10, bottom: 10, left: 10 }}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+            <XAxis dataKey="day" type="number" domain={[1, 28]} tick={{ fontSize: 10 }} />
+            <YAxis dataKey="price" tick={{ fontSize: 10 }} />
+            <Tooltip cursor={{ strokeDasharray: '3 3' }} />
+            <Scatter data={transactionData} fill="#fb923c" fillOpacity={0.6} />
+          </ScatterChart>
+        </ResponsiveContainer>
+        <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
+          <div className="flex items-center gap-2">
+            <img
+              src="figma:asset/49c8d247271c35d7d5ac6b2296eeeb4783a051bd.png"
+              alt="top1"
+              className="w-8 h-8 rounded-lg object-cover"
+            />
+            <div>
+              <div className="font-semibold">top1: #9202</div>
+              <div className="text-gray-500">17999 usd</div>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <img
+              src="figma:asset/49c8d247271c35d7d5ac6b2296eeeb4783a051bd.png"
+              alt="bottom"
+              className="w-8 h-8 rounded-lg object-cover"
+            />
+            <div>
+              <div className="font-semibold">bottom: #6759</div>
+              <div className="text-gray-500">1.02 usd</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Stats Cards */}
+      <div className="grid grid-cols-2 gap-3">
+        <div className="bg-white rounded-2xl p-4 shadow-lg">
+          <div className="text-xs text-gray-500 mb-1">总成交额 (USD)</div>
+          <div className="text-2xl font-bold text-gray-900">$927,165.84</div>
+          <div className="text-xs text-green-600 font-medium mt-1">+38.3% 昨日</div>
+        </div>
+        <div className="bg-white rounded-2xl p-4 shadow-lg">
+          <div className="text-xs text-gray-500 mb-1">总成交笔</div>
+          <div className="text-2xl font-bold text-gray-900">102 笔</div>
+          <div className="text-xs text-green-600 font-medium mt-1">+24.4% 昨日</div>
+        </div>
+      </div>
+
+      {/* Price Cards */}
+      <div className="grid grid-cols-2 gap-3">
+        <div className="bg-gradient-to-br from-orange-500 to-orange-600 text-white rounded-2xl p-4 shadow-lg">
+          <div className="text-xs opacity-90 mb-1">NFT地板价 (USD)</div>
+          <div className="text-2xl font-bold">$138,627.53</div>
+          <div className="text-xs mt-2 opacity-75">最近 12 笔</div>
+        </div>
+        <div className="bg-gradient-to-br from-orange-500 to-orange-600 text-white rounded-2xl p-4 shadow-lg">
+          <div className="text-xs opacity-90 mb-1">ETH地板价 (USD)</div>
+          <div className="text-2xl font-bold">$33,113.07</div>
+          <div className="text-xs mt-2 opacity-75">24天交易均价</div>
+        </div>
+      </div>
+    </div>
+  );
+}
