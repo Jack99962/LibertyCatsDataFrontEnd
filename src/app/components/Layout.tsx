@@ -16,7 +16,7 @@ export function Layout() {
     { path: '/rankings', label: t('nav.rankings'), icon: Crown },
   ];
 
-  const timeRanges: TimeRange[] = ['24H', '7D', '30D'];
+  const timeRanges: TimeRange[] = ['24H', '7D', '30D', 'ALL'];
   const languages: { code: Language; label: string }[] = [
     { code: 'zh', label: '中' },
     { code: 'en', label: 'EN' },

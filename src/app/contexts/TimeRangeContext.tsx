@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, ReactNode } from 'react';
 
-export type TimeRange = '24H' | '7D' | '30D';
+export type TimeRange = '24H' | '7D' | '30D' | 'ALL';
 
 interface TimeRangeContextType {
   timeRange: TimeRange;
