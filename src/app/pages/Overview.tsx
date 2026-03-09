@@ -2,12 +2,13 @@ import { TrendingUp, TrendingDown, DollarSign, ShoppingCart, Package } from 'luc
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { useTimeRange } from '../contexts/TimeRangeContext';
 import { useLanguage } from '../contexts/LanguageContext';
+import { React } from 'react';
 
 // Mock data generator based on time range
 const generateTrendData = (range: '24H' | '7D' | '30D') => {
   const dataPoints = range === '24H' ? 24 : range === '7D' ? 7 : 28;
   const label = range === '24H' ? 'h' : 'day';
-  
+
   return Array.from({ length: dataPoints }, (_, i) => ({
     [label]: i + 1,
     price: 8000 + Math.random() * 3000,
