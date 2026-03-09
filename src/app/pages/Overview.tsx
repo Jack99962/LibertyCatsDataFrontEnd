@@ -22,16 +22,17 @@ export function Overview() {
   const { t } = useLanguage();
   const trendData = generateTrendData(timeRange);
   const xAxisKey = timeRange === '24H' ? 'h' : 'day';
-  const { data } = useCollectionDetail()
+  const { data, error, isError, isPending: isPendingDetail } = useCollectionDetail()
 
   return (
     <div className="space-y-4">
       {/* KPI Cards */}
       <div className="grid grid-cols-2 gap-3">
+
         <KPICard
           icon={<DollarSign className="w-5 h-5" />}
           label={t('overview.floorPrice')}
-          value="$9,312"
+          value={`11`}
           change="+12.65%"
           trend="up"
         />
