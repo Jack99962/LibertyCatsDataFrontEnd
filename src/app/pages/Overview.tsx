@@ -3,7 +3,8 @@ import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, L
 import { useTimeRange } from '../contexts/TimeRangeContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { React } from 'react';
-
+import { useCollectionDetail } from '../../services';
+import { useEffect } from "react";
 // Mock data generator based on time range
 const generateTrendData = (range: '24H' | '7D' | '30D') => {
   const dataPoints = range === '24H' ? 24 : range === '7D' ? 7 : 28;
@@ -21,6 +22,7 @@ export function Overview() {
   const { t } = useLanguage();
   const trendData = generateTrendData(timeRange);
   const xAxisKey = timeRange === '24H' ? 'h' : 'day';
+  const { data } = useCollectionDetail()
 
   return (
     <div className="space-y-4">

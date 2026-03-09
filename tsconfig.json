@@ -1,0 +1,5 @@
+{
+    "compilerOptions": {
+        "jsx": "react-jsx" // 确保这里是 react-jsx 而不是 react
+    }
+}
