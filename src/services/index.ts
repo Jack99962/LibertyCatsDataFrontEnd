@@ -31,6 +31,13 @@ export interface ActivityHeatmapPoint {
     count: number;
 }
 
+export interface ActivityScatterPoint {
+    /** 成交时间（毫秒时间戳） */
+    timestampMs: number;
+    /** 成交价格 */
+    price: number;
+}
+
 /** 首页面板数据（集合详情 + 成交量 + 成交笔数），time 动态参数 */
 export const useIndexTop = (time: IndexTopTime) => {
     const { http } = useAxios();
@@ -66,6 +73,19 @@ export const useActivityHeatmap = () => {
         queryFn: async () => {
             const res = await http({ url: '/activity/get24HHeatmap' });
             return (res as { data: ActivityHeatmapPoint[] }).data;
+        },
+    });
+}
+
+/** 成交散点图（Activity 页面） */
+export const useActivityScatter = (time: IndexTopTime) => {
+    const { http } = useAxios();
+
+    return useQuery<ActivityScatterPoint[]>({
+        queryKey: ['getTransactionScatter', time],
+        queryFn: async () => {
+            const res = await http({ url: `/activity/getTransactionScatter/${time}` });
+            return (res as { data: ActivityScatterPoint[] }).data;
         },
     });
 }

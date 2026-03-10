@@ -2,7 +2,7 @@ import { Clock } from 'lucide-react';
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ScatterChart, Scatter } from 'recharts';
 import { useTimeRange } from '../contexts/TimeRangeContext';
 import { useLanguage } from '../contexts/LanguageContext';
-import { useActivityHeatmap } from '../../services';
+import { useActivityHeatmap, useActivityScatter, type IndexTopTime } from '../../services';
 
 // 默认热力图数据（作为后端数据加载前的占位 & 兜底）
 const defaultHeatmapData = [
@@ -39,16 +39,25 @@ const trendData = Array.from({ length: 28 }, (_, i) => ({
   volume: Math.floor(Math.random() * 15000) + 5000,
 }));
 
-// Mock transaction scatter data
-const transactionData = Array.from({ length: 80 }, (_, i) => ({
-  day: Math.floor(i / 3) + 1,
-  price: 8000 + Math.random() * 12000,
-  size: Math.random() * 100 + 20,
-}));
+const timeRangeToBackend: Record<string, IndexTopTime> = {
+  '24H': '1d',
+  '7D': '7d',
+  '30D': '30d',
+  'ALL': 'all',
+};
 
 export function Activity() {
   const { t } = useLanguage();
   const { data: heatmapData, isPending } = useActivityHeatmap();
+  const { timeRange } = useTimeRange();
+  const backendTime = timeRangeToBackend[timeRange] ?? '7d';
+  const { data: scatterData, isPending: isScatterPending } = useActivityScatter(backendTime);
+
+  const finalScatterData =
+    scatterData?.map((item) => ({
+      timestampMs: item.timestampMs,
+      price: item.price,
+    })) ?? [];
   const finalHeatmapData = heatmapData && heatmapData.length > 0 ? heatmapData : defaultHeatmapData;
 
   return (
@@ -60,10 +69,41 @@ export function Activity() {
         <ResponsiveContainer width="100%" height={250}>
           <ScatterChart margin={{ top: 10, right: 10, bottom: 10, left: 10 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-            <XAxis dataKey="day" type="number" domain={[1, 28]} tick={{ fontSize: 10 }} />
+            <XAxis
+              dataKey="timestampMs"
+              type="number"
+              tick={{ fontSize: 10 }}
+              domain={['auto', 'auto']}
+              tickFormatter={(value: number) => {
+                const d = new Date(value);
+                const pad2 = (n: number) => String(n).padStart(2, '0');
+                const month = pad2(d.getMonth() + 1);
+                const date = pad2(d.getDate());
+                const hours = pad2(d.getHours());
+                const minutes = pad2(d.getMinutes());
+                return `${month}-${date} ${hours}:${minutes}`;
+              }}
+            />
             <YAxis dataKey="price" tick={{ fontSize: 10 }} />
-            <Tooltip cursor={{ strokeDasharray: '3 3' }} />
-            <Scatter data={transactionData} fill="#fb923c" fillOpacity={0.6} />
+            <Tooltip
+              cursor={{ strokeDasharray: '3 3' }}
+              formatter={(value: any) => [value, 'Price']}
+              labelFormatter={(value: any) => {
+                const d = new Date(value);
+                const pad2 = (n: number) => String(n).padStart(2, '0');
+                const month = pad2(d.getMonth() + 1);
+                const date = pad2(d.getDate());
+                const hours = pad2(d.getHours());
+                const minutes = pad2(d.getMinutes());
+                const seconds = pad2(d.getSeconds());
+                return `${month}-${date} ${hours}:${minutes}:${seconds}`;
+              }}
+            />
+            <Scatter
+              data={finalScatterData}
+              fill="#fb923c"
+              fillOpacity={0.6}
+            />
           </ScatterChart>
         </ResponsiveContainer>
         <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
