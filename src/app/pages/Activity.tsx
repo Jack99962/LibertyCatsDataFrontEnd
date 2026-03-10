@@ -47,7 +47,7 @@ const transactionData = Array.from({ length: 80 }, (_, i) => ({
 
 export function Activity() {
   const { t } = useLanguage();
-  
+
   return (
     <div className="space-y-4">
       {/* 24H Heatmap */}
@@ -63,12 +63,12 @@ export function Activity() {
                   item.count === 0
                     ? '#fef3c7'
                     : item.count < 5
-                    ? '#fed7aa'
-                    : item.count < 10
-                    ? '#fdba74'
-                    : item.count < 15
-                    ? '#fb923c'
-                    : '#f97316',
+                      ? '#fed7aa'
+                      : item.count < 10
+                        ? '#fdba74'
+                        : item.count < 15
+                          ? '#fb923c'
+                          : '#f97316',
                 color: item.count >= 10 ? 'white' : '#92400e',
               }}
             >
@@ -83,61 +83,8 @@ export function Activity() {
         </div>
       </div>
 
-      {/* Peak Time */}
-      <div className="bg-gradient-to-br from-orange-500 to-orange-600 text-white rounded-2xl p-6 shadow-lg">
-        <div className="text-xs mb-2 opacity-90">高峰交易时间 PEAK TIME</div>
-        {/* <div className="text-5xl font-black mb-2">{peakHour.hour}:00</div> */}
-        <div className="text-sm">
-          {/* 共成交 <span className="font-bold text-xl">{peakHour.count}</span> 笔 */}
-        </div>
-        <div className="text-xs mt-2 opacity-75">该时段最活跃，共约占当日总量 4.5 倍</div>
-      </div>
 
-      {/* Transaction Trend */}
-      <div className="bg-white rounded-2xl p-4 shadow-lg">
-        <h3 className="text-sm font-semibold mb-3 text-gray-700">交易趋势分析 TREND</h3>
-        <ResponsiveContainer width="100%" height={200}>
-          <BarChart data={trendData}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-            <XAxis dataKey="day" tick={{ fontSize: 10 }} />
-            <YAxis tick={{ fontSize: 10 }} />
-            <Tooltip />
-            <Bar dataKey="volume" fill="#fdba74" radius={[4, 4, 0, 0]} />
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
 
-      {/* Volume & Price Dual Chart */}
-      <div className="bg-white rounded-2xl p-4 shadow-lg">
-        <h3 className="text-sm font-semibold mb-3 text-gray-700">成交量与地板价趋势</h3>
-        <ResponsiveContainer width="100%" height={200}>
-          <LineChart data={trendData}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-            <XAxis dataKey="day" tick={{ fontSize: 10 }} />
-            <YAxis yAxisId="left" tick={{ fontSize: 10 }} />
-            <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 10 }} />
-            <Tooltip />
-            <Line
-              yAxisId="left"
-              type="monotone"
-              dataKey="volume"
-              stroke="#fb923c"
-              strokeWidth={2}
-              name="成交量"
-              dot={false}
-            />
-            <Line
-              yAxisId="right"
-              type="monotone"
-              dataKey="price"
-              stroke="#fdba74"
-              strokeWidth={2}
-              name="地板价"
-              dot={false}
-            />
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
 
       {/* Transaction Distribution */}
       <div className="bg-white rounded-2xl p-4 shadow-lg">
@@ -177,33 +124,6 @@ export function Activity() {
         </div>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-2 gap-3">
-        <div className="bg-white rounded-2xl p-4 shadow-lg">
-          <div className="text-xs text-gray-500 mb-1">总成交额 (USD)</div>
-          <div className="text-2xl font-bold text-gray-900">$927,165.84</div>
-          <div className="text-xs text-green-600 font-medium mt-1">+38.3% 昨日</div>
-        </div>
-        <div className="bg-white rounded-2xl p-4 shadow-lg">
-          <div className="text-xs text-gray-500 mb-1">总成交笔</div>
-          <div className="text-2xl font-bold text-gray-900">102 笔</div>
-          <div className="text-xs text-green-600 font-medium mt-1">+24.4% 昨日</div>
-        </div>
-      </div>
-
-      {/* Price Cards */}
-      <div className="grid grid-cols-2 gap-3">
-        <div className="bg-gradient-to-br from-orange-500 to-orange-600 text-white rounded-2xl p-4 shadow-lg">
-          <div className="text-xs opacity-90 mb-1">NFT地板价 (USD)</div>
-          <div className="text-2xl font-bold">$138,627.53</div>
-          <div className="text-xs mt-2 opacity-75">最近 12 笔</div>
-        </div>
-        <div className="bg-gradient-to-br from-orange-500 to-orange-600 text-white rounded-2xl p-4 shadow-lg">
-          <div className="text-xs opacity-90 mb-1">ETH地板价 (USD)</div>
-          <div className="text-2xl font-bold">$33,113.07</div>
-          <div className="text-xs mt-2 opacity-75">24天交易均价</div>
-        </div>
-      </div>
     </div>
   );
 }
