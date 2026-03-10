@@ -51,6 +51,32 @@ export interface HolderTrendData {
     points: HolderTrendPoint[];
 }
 
+/** 当前总持有人数 */
+export const useCurrentHoldersCount = () => {
+    const { http } = useAxios();
+
+    return useQuery<number>({
+        queryKey: ['getCurrentHoldersCount'],
+        queryFn: async () => {
+            const res = await http({ url: '/holdings/holders-count' });
+            return (res as { data: number }).data;
+        },
+    });
+}
+
+/** 平均持有量 */
+export const useAverageHolding = () => {
+    const { http } = useAxios();
+
+    return useQuery<number>({
+        queryKey: ['getAverageHolding'],
+        queryFn: async () => {
+            const res = await http({ url: '/holdings/avg-holding' });
+            return (res as { data: number }).data;
+        },
+    });
+}
+
 /** 首页面板数据（集合详情 + 成交量 + 成交笔数），time 动态参数 */
 export const useIndexTop = (time: IndexTopTime) => {
     const { http } = useAxios();

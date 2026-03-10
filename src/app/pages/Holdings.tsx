@@ -2,6 +2,7 @@ import { Users, TrendingUp, TrendingDown } from 'lucide-react';
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { useTimeRange } from '../contexts/TimeRangeContext';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useAverageHolding, useCurrentHoldersCount } from '../../services';
 
 // Mock data generator for holder trends based on time range
 const generateHolderTrendData = (range: '24H' | '7D' | '30D') => {
@@ -64,6 +65,8 @@ const topIncrease = [
 export function Holdings() {
   const { timeRange } = useTimeRange();
   const { t } = useLanguage();
+  const { data: currentHoldersCount } = useCurrentHoldersCount();
+  const { data: averageHolding } = useAverageHolding();
   const holderTrendData = generateHolderTrendData(timeRange);
   const xAxisKey = timeRange === '24H' ? 'h' : 'day';
 
@@ -76,10 +79,12 @@ export function Holdings() {
             <Users className="w-5 h-5" />
             <span className="text-xs">{t('holdings.totalHolders')}</span>
           </div>
-          <div className="text-2xl font-bold text-gray-900">2,945</div>
+          <div className="text-2xl font-bold text-gray-900">
+            {currentHoldersCount ?? '-'}
+          </div>
           <div className="flex items-center gap-1 text-xs font-medium text-red-600 mt-1">
-            <TrendingDown className="w-3 h-3" />
-            <span>-9 (30D)</span>
+            {/* <TrendingDown className="w-3 h-3" /> */}
+            {/* <span>-9 (30D)</span> */}
           </div>
         </div>
         <div className="bg-white rounded-2xl p-4 shadow-lg">
@@ -87,10 +92,12 @@ export function Holdings() {
             <Users className="w-5 h-5" />
             <span className="text-xs">{t('holdings.avgHolding')}</span>
           </div>
-          <div className="text-2xl font-bold text-gray-900">3.4 {t('holdings.cats')}</div>
+          <div className="text-2xl font-bold text-gray-900">
+            {averageHolding?.toFixed(2) ?? '-'} {t('holdings.cats')}
+          </div>
           <div className="flex items-center gap-1 text-xs font-medium text-green-600 mt-1">
-            <TrendingUp className="w-3 h-3" />
-            <span>+0.2 (30D)</span>
+            {/* <TrendingUp className="w-3 h-3" /> */}
+            {/* <span>+0.2 (30D)</span> */}
           </div>
         </div>
       </div>
