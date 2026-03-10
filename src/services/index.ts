@@ -38,6 +38,18 @@ export interface ActivityScatterPoint {
     price: number;
 }
 
+export interface HolderTrendPoint {
+  index: number;
+  label: string;
+  startTimeMs: number;
+  endTimeMs: number;
+  holders: number;
+}
+
+export interface HolderTrendData {
+  points: HolderTrendPoint[];
+}
+
 /** 首页面板数据（集合详情 + 成交量 + 成交笔数），time 动态参数 */
 export const useIndexTop = (time: IndexTopTime) => {
     const { http } = useAxios();
@@ -62,6 +74,19 @@ export const useIndexTrend = (time: IndexTopTime) => {
             return (res as { data: IndexTrendData }).data;
         },
     });
+}
+
+/** 持有人数趋势（全量，4 个时间段） */
+export const useHolderTrend = () => {
+  const { http } = useAxios();
+
+  return useQuery<HolderTrendData>({
+    queryKey: ['getHolderTrend'],
+    queryFn: async () => {
+      const res = await http({ url: '/index/getHolderTrend' });
+      return (res as { data: HolderTrendData }).data;
+    },
+  });
 }
 
 /** 24 小时交易热力图 */

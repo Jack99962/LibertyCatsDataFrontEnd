@@ -1,9 +1,9 @@
 import { TrendingUp, TrendingDown, DollarSign, ShoppingCart, Package } from 'lucide-react';
-import { ComposedChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { ComposedChart, Line, LineChart, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { useTimeRange } from '../contexts/TimeRangeContext';
 import { useLanguage } from '../contexts/LanguageContext';
-import { React } from 'react';
-import { useIndexTop, useIndexTrend, type IndexTopTime } from '../../services';
+import { React, useMemo } from 'react';
+import { useIndexTop, useIndexTrend, useHolderTrend, type IndexTopTime } from '../../services';
 
 const timeRangeToBackend: Record<string, IndexTopTime> = {
   '24H': '1d',
@@ -24,13 +24,32 @@ function formatAxisNumber(value: number): string {
   return String(Math.round(value));
 }
 
+function formatHoldersAxis(value: number): string {
+  if (value >= 1_000) return `${(value / 1_000).toFixed(0)}k`;
+  return String(Math.round(value));
+}
+
 export function Overview() {
   const { timeRange } = useTimeRange();
   const { t } = useLanguage();
   const backendTime = timeRangeToBackend[timeRange] ?? '1d';
   const { data, isPending } = useIndexTop(backendTime);
   const { data: trendRes, isPending: isTrendPending } = useIndexTrend(backendTime);
+  const { data: holderTrendRes, isPending: isHolderPending } = useHolderTrend();
   const trendData = trendRes?.points ?? [];
+  const holderTrendData = holderTrendRes?.points ?? [];
+  const holderTicks = useMemo(() => {
+    if (!holderTrendData.length) return [];
+    const n = holderTrendData.length;
+    if (n <= 4) {
+      return holderTrendData.map((p) => p.label);
+    }
+    const step = (n - 1) / 3;
+    return [0, 1, 2, 3].map((i) => {
+      const idx = Math.round(i * step);
+      return holderTrendData[idx]?.label;
+    }).filter(Boolean) as string[];
+  }, [holderTrendData]);
   const xKey = timeRange === '24H' ? 'x' : 'label';
 
   const detail = data?.detail as any;
@@ -176,18 +195,28 @@ export function Overview() {
       <div className="bg-white rounded-2xl p-4 shadow-lg">
         <h3 className="text-sm font-semibold mb-3 text-gray-700">{t('overview.holders')}</h3>
         <ResponsiveContainer width="100%" height={180}>
-          <BarChart data={[
-            { month: '11月', holders: 2963 },
-            { month: '12月', holders: 2953 },
-            { month: '1月', holders: 2950 },
-            { month: '2月', holders: 2942 },
-          ]}>
+          <LineChart data={isHolderPending ? [] : holderTrendData}>
             <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-            <XAxis dataKey="month" tick={{ fontSize: 11 }} />
-            <YAxis tick={{ fontSize: 10 }} />
-            <Tooltip />
-            <Bar dataKey="holders" fill="#fb923c" radius={[8, 8, 0, 0]} />
-          </BarChart>
+            <XAxis
+              dataKey="label"
+              tick={{ fontSize: 11 }}
+              ticks={holderTicks}
+              tickFormatter={(label: string) => (label?.length >= 10 ? label.slice(5) : label)}
+            />
+            <YAxis tick={{ fontSize: 10 }} tickFormatter={formatHoldersAxis} />
+            <Tooltip
+              formatter={(value: any) => [value, t('overview.holders')]}
+              labelFormatter={(label) => String(label)}
+            />
+            <Line
+              type="monotone"
+              dataKey="holders"
+              stroke="#fb923c"
+              strokeWidth={2}
+              dot={false}
+              activeDot={{ r: 5 }}
+            />
+          </LineChart>
         </ResponsiveContainer>
       </div>
     </div>
