@@ -120,7 +120,7 @@ export function Overview() {
         />
         <KPICard
           icon={<Package className="w-5 h-5" />}
-          label={t('overview.listed')}
+          label={t('overview.totalNumber')}
           value="102"
           change="+24.4%"
           trend="up"
@@ -159,7 +159,7 @@ export function Overview() {
               opacity={0.7}
               barSize={10}
             />
-            <Line
+            {/* <Line
               yAxisId="price"
               type="monotone"
               dataKey="avgPrice"
@@ -178,7 +178,7 @@ export function Overview() {
               name={t('overview.floorPrice')}
               connectNulls
               dot={false}
-            />
+            /> */}
           </ComposedChart>
         </ResponsiveContainer>
       </div>

@@ -36,6 +36,7 @@ const translations = {
     'overview.holders': '持猫人数',
     'overview.price': '地板价 (USD)',
     'overview.volumeCount': '成交数 (pcs)',
+    'overview.totalNumber': "藏品总数",
 
     // Activity Page
     'activity.title': '市场活动',
@@ -98,6 +99,8 @@ const translations = {
     'overview.holders': 'Cat Holders',
     'overview.price': 'Floor Price (USD)',
     'overview.volumeCount': 'Volume (pcs)',
+    'overview.totalNumber': 'Total Supply',
+
 
     // Activity Page
     'activity.title': 'Market Activity',
@@ -160,6 +163,7 @@ const translations = {
     'overview.holders': 'ホルダー数',
     'overview.price': 'フロア価格 (USD)',
     'overview.volumeCount': '取引量 (個)',
+    'overview.totalNumber': '総発行数',
 
     // Activity Page
     'activity.title': '市場活動',
