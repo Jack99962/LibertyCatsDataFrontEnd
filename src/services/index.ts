@@ -63,6 +63,20 @@ export interface HoldingsTopChangeData {
     topReduction: HoldingChangeItem[];
 }
 
+export interface HoldingBucketChangeBuckets {
+    oneCat: number;
+    twoToThreeCats: number;
+    fourToTenCats: number;
+    elevenToFiftyCats: number;
+    fiftyOneToHundredCats: number;
+    moreThanHundredCats: number;
+}
+
+export interface HoldingBucketChangeData {
+    time: IndexTopTime;
+    buckets: HoldingBucketChangeBuckets;
+}
+
 /** 当前总持有人数 */
 export const useCurrentHoldersCount = () => {
     const { http } = useAxios();
@@ -137,6 +151,19 @@ export const useHoldingsTopChange = (time: IndexTopTime) => {
         queryFn: async () => {
             const res = await http({ url: `/holdings/top-change/${time}` });
             return (res as { data: HoldingsTopChangeData }).data;
+        },
+    });
+}
+
+/** 按持仓桶统计持猫党人数变化（同 Overview 时间维度） */
+export const useHoldingBucketChange = (time: IndexTopTime) => {
+    const { http } = useAxios();
+
+    return useQuery<HoldingBucketChangeData>({
+        queryKey: ['getHoldingBucketChange', time],
+        queryFn: async () => {
+            const res = await http({ url: `/holdings/bucket-change/${time}` });
+            return (res as { data: HoldingBucketChangeData }).data;
         },
     });
 }

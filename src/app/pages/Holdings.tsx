@@ -2,17 +2,21 @@ import { Users, TrendingUp, TrendingDown } from 'lucide-react';
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { useTimeRange } from '../contexts/TimeRangeContext';
 import { useLanguage } from '../contexts/LanguageContext';
-import { useAverageHolding, useCurrentHoldersCount, useHoldingsTopChange, type IndexTopTime } from '../../services';
+import { useAverageHolding, useCurrentHoldersCount, useHoldingsTopChange, useHoldingBucketChange, type IndexTopTime } from '../../services';
 
 // Mock data generator for holder trends based on time range
 const generateHolderTrendData = (range: '24H' | '7D' | '30D') => {
   const dataPoints = range === '24H' ? 24 : range === '7D' ? 7 : 28;
   const label = range === '24H' ? 'h' : 'day';
 
-  return Array.from({ length: dataPoints }, (_, i) => ({
-    [label]: i + 1,
-    holders: 115 + Math.floor(Math.random() * 40),
-  }));
+  const result: { [key: string]: number }[] = [];
+  for (let i = 0; i < dataPoints; i++) {
+    result.push({
+      [label]: i + 1,
+      holders: 115 + Math.floor(Math.random() * 40),
+    });
+  }
+  return result;
 };
 
 // Holdings distribution data
@@ -35,14 +39,13 @@ const holdingPeriodData = [
   { name: '<24H', value: 0.7, color: '#fbbf24' },
 ];
 
-// Holder changes by category
-const holderChangesData = [
-  { category: '一猫党', change: -10, color: '#06b6d4' },
-  { category: '2-3猫党', change: 5, color: '#fb923c' },
-  { category: '4-10猫党', change: -4, color: '#f87171' },
-  { category: '11-50猫党', change: -1, color: '#60a5fa' },
-  { category: '51-100猫党', change: 1, color: '#f87171' },
-  { category: '>100猫党', change: 0, color: '#a3e635' },
+const HOLDER_BUCKET_CONFIG = [
+  { key: 'oneCat' as const, label: '一猫党', color: '#06b6d4' },
+  { key: 'twoToThreeCats' as const, label: '2-3猫党', color: '#fb923c' },
+  { key: 'fourToTenCats' as const, label: '4-10猫党', color: '#f87171' },
+  { key: 'elevenToFiftyCats' as const, label: '11-50猫党', color: '#60a5fa' },
+  { key: 'fiftyOneToHundredCats' as const, label: '51-100猫党', color: '#f87171' },
+  { key: 'moreThanHundredCats' as const, label: '>100猫党', color: '#a3e635' },
 ];
 
 // 地址脱敏显示：首尾各 4 位，中间用 4 个 * 代替
@@ -67,6 +70,7 @@ export function Holdings() {
   const { data: averageHolding } = useAverageHolding();
   const backendTime = timeRangeToBackend[timeRange] ?? '7d';
   const { data: holdingsTopChange } = useHoldingsTopChange(backendTime);
+  const { data: holdingBucketChange } = useHoldingBucketChange(backendTime);
   const holderTrendData = generateHolderTrendData(timeRange);
   const xAxisKey = timeRange === '24H' ? 'h' : 'day';
 
@@ -133,21 +137,27 @@ export function Holdings() {
       <div className="bg-white rounded-2xl p-4 shadow-lg">
         <h3 className="text-sm font-semibold mb-3 text-gray-700">持猫党人数变化</h3>
         <div className="space-y-2">
-          {holderChangesData.map((item) => (
-            <div key={item.category} className="flex items-center gap-2">
-              <div className="w-24 text-xs text-gray-600">{item.category}:</div>
+          {HOLDER_BUCKET_CONFIG.map((item) => {
+            const change = holdingBucketChange?.buckets[item.key] ?? 0;
+            const displayValue =
+              change > 0 ? `+${change}` : change === 0 ? '0' : String(change);
+            const widthPercent = Math.min(Math.abs(change) * 10, 100);
+
+            return (
+              <div key={item.key} className="flex items-center gap-2">
+                <div className="w-24 text-xs text-gray-600">{item.label}:</div>
               <div className="flex-1 flex items-center gap-2">
                 <div className="flex-1 h-6 bg-gray-100 rounded-lg overflow-hidden flex items-center">
-                  {item.change !== 0 && (
+                  {change !== 0 && (
                     <div
                       className="h-full flex items-center justify-center text-white text-xs font-bold"
                       style={{
-                        width: `${Math.abs(item.change) * 10}%`,
+                        width: `${widthPercent}%`,
                         backgroundColor: item.color,
-                        marginLeft: item.change < 0 ? '0' : 'auto',
+                        marginLeft: change < 0 ? '0' : 'auto',
                       }}
                     >
-                      {item.change > 0 ? `+${item.change}` : item.change}
+                      {displayValue}
                     </div>
                   )}
                 </div>
@@ -155,11 +165,12 @@ export function Holdings() {
                   className="w-8 h-6 rounded flex items-center justify-center text-white text-xs font-bold"
                   style={{ backgroundColor: item.color }}
                 >
-                  {item.change > 0 ? `+${item.change}` : item.change === 0 ? '0' : item.change}
+                  {displayValue}
                 </div>
               </div>
             </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 
