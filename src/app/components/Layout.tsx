@@ -16,7 +16,7 @@ export function Layout() {
     { path: '/rankings', label: t('nav.rankings'), icon: Crown },
   ];
 
-  const timeRanges: TimeRange[] = ['24H', '7D', '30D', 'ALL'];
+  const timeRanges: TimeRange[] = ['24H', '7D', '30D'];
   const languages: { code: Language; label: string }[] = [
     { code: 'zh', label: '中' },
     { code: 'en', label: 'EN' },
@@ -43,9 +43,9 @@ export function Layout() {
                   <span className="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
                   <span>{t('app.live')}</span>
 
-                <div className="text-xs text-gray-400">
-                  {new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })}
-                </div>
+                  <div className="text-xs text-gray-400">
+                    {new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })}
+                  </div>
                 </div>
               </div>
             </div>
@@ -58,8 +58,8 @@ export function Layout() {
                     key={lang.code}
                     onClick={() => setLanguage(lang.code)}
                     className={`px-2.5 py-1 rounded-md text-xs font-semibold transition-all ${language === lang.code
-                        ? 'bg-orange-500 text-white'
-                        : 'text-gray-600 hover:text-gray-900'
+                      ? 'bg-orange-500 text-white'
+                      : 'text-gray-600 hover:text-gray-900'
                       }`}
                   >
                     {lang.label}
@@ -78,8 +78,8 @@ export function Layout() {
                 key={range}
                 onClick={() => setTimeRange(range)}
                 className={`flex-1 py-2 rounded-md text-sm font-semibold transition-all ${timeRange === range
-                    ? 'bg-orange-500 text-white shadow-md'
-                    : 'text-gray-600 hover:text-gray-900'
+                  ? 'bg-orange-500 text-white shadow-md'
+                  : 'text-gray-600 hover:text-gray-900'
                   }`}
               >
                 {range}

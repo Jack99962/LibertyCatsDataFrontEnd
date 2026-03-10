@@ -13,30 +13,30 @@ const translations = {
     // Header
     'app.title': 'Liberty Cats',
     'app.live': '实时',
-    
+
     // Navigation
     'nav.overview': '总览',
     'nav.activity': '市场',
     'nav.holdings': '持仓',
     'nav.rankings': '地址',
-    
+
     // Time Range
     'time.24h': '24H',
     'time.7d': '7D',
     'time.30d': '30D',
-    
+
     // Overview Page
     'overview.floorPrice': '地板价 (USD)',
     'overview.volume': '成交额',
     'overview.transactions': '成交笔数',
     'overview.listed': '当前上架数',
-    'overview.trendChart': '地板价与成交数趋势',
+    'overview.trendChart': '成交数趋势',
     'overview.insight': '今日结论',
     'overview.insightText': '价格震荡偏强，16:00 为峰值时段，成交额较昨日 +24.4%',
     'overview.holders': '持猫人数',
     'overview.price': '地板价 (USD)',
     'overview.volumeCount': '成交数 (pcs)',
-    
+
     // Activity Page
     'activity.title': '市场活动',
     'activity.heatmap': '24小时交易热力图',
@@ -48,7 +48,7 @@ const translations = {
     'activity.volume.label': '成交量',
     'activity.price': '价格区间',
     'activity.count': '成交数',
-    
+
     // Holdings Page
     'holdings.title': '持仓分析',
     'holdings.totalHolders': '总持有人数',
@@ -61,7 +61,7 @@ const translations = {
     'holdings.small': '散户 (1-9)',
     'holdings.topHolders': 'Top 持有者',
     'holdings.cats': '只猫',
-    
+
     // Rankings Page
     'rankings.title': '地址排名',
     'rankings.byVolume': '按交易额排名',
@@ -75,18 +75,18 @@ const translations = {
     // Header
     'app.title': 'Liberty Cats',
     'app.live': 'Live',
-    
+
     // Navigation
     'nav.overview': 'Overview',
     'nav.activity': 'Activity',
     'nav.holdings': 'Holdings',
     'nav.rankings': 'Rankings',
-    
+
     // Time Range
     'time.24h': '24H',
     'time.7d': '7D',
     'time.30d': '30D',
-    
+
     // Overview Page
     'overview.floorPrice': 'Floor Price (USD)',
     'overview.volume': 'Volume',
@@ -98,7 +98,7 @@ const translations = {
     'overview.holders': 'Cat Holders',
     'overview.price': 'Floor Price (USD)',
     'overview.volumeCount': 'Volume (pcs)',
-    
+
     // Activity Page
     'activity.title': 'Market Activity',
     'activity.heatmap': '24H Trading Heatmap',
@@ -110,7 +110,7 @@ const translations = {
     'activity.volume.label': 'Volume',
     'activity.price': 'Price Range',
     'activity.count': 'Count',
-    
+
     // Holdings Page
     'holdings.title': 'Holdings Analysis',
     'holdings.totalHolders': 'Total Holders',
@@ -123,7 +123,7 @@ const translations = {
     'holdings.small': 'Small (1-9)',
     'holdings.topHolders': 'Top Holders',
     'holdings.cats': 'Cats',
-    
+
     // Rankings Page
     'rankings.title': 'Address Rankings',
     'rankings.byVolume': 'By Volume',
@@ -137,18 +137,18 @@ const translations = {
     // Header
     'app.title': 'Liberty Cats',
     'app.live': 'ライブ',
-    
+
     // Navigation
     'nav.overview': '概要',
     'nav.activity': '市場',
     'nav.holdings': '保有',
     'nav.rankings': 'ランキング',
-    
+
     // Time Range
     'time.24h': '24H',
     'time.7d': '7D',
     'time.30d': '30D',
-    
+
     // Overview Page
     'overview.floorPrice': 'フロア価格 (USD)',
     'overview.volume': '取引高',
@@ -160,7 +160,7 @@ const translations = {
     'overview.holders': 'ホルダー数',
     'overview.price': 'フロア価格 (USD)',
     'overview.volumeCount': '取引量 (個)',
-    
+
     // Activity Page
     'activity.title': '市場活動',
     'activity.heatmap': '24時間取引ヒートマップ',
@@ -172,7 +172,7 @@ const translations = {
     'activity.volume.label': '取引量',
     'activity.price': '価格帯',
     'activity.count': '件数',
-    
+
     // Holdings Page
     'holdings.title': '保有分析',
     'holdings.totalHolders': '総保有者数',
@@ -185,7 +185,7 @@ const translations = {
     'holdings.small': '小口 (1-9)',
     'holdings.topHolders': 'トップホルダー',
     'holdings.cats': '匹',
-    
+
     // Rankings Page
     'rankings.title': 'アドレスランキング',
     'rankings.byVolume': '取引高順',

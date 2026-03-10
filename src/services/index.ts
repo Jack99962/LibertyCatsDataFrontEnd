@@ -9,15 +9,45 @@ export interface IndexTopData {
     transactions: number;
 }
 
+export interface IndexTrendPoint {
+    index: number;
+    x: number;
+    label: string;
+    startTimeMs: number;
+    endTimeMs: number;
+    price: number | null;
+    avgPrice: number | null;
+    volume: number;
+    count: number;
+}
+
+export interface IndexTrendData {
+    time: IndexTopTime;
+    points: IndexTrendPoint[];
+}
+
 /** 首页面板数据（集合详情 + 成交量 + 成交笔数），time 动态参数 */
 export const useIndexTop = (time: IndexTopTime) => {
     const { http } = useAxios();
 
-    return useQuery({
+    return useQuery<IndexTopData>({
         queryKey: ['getIndexTop', time],
-        queryFn: async (): Promise<IndexTopData> => {
+        queryFn: async () => {
             const res = await http({ url: `/index/getIndexTop/${time}` });
             return (res as { data: IndexTopData }).data;
+        },
+    });
+}
+
+/** 地板价与成交趋势（用于 Overview 折线图） */
+export const useIndexTrend = (time: IndexTopTime) => {
+    const { http } = useAxios();
+
+    return useQuery<IndexTrendData>({
+        queryKey: ['getFloorAndVolumeTrend', time],
+        queryFn: async () => {
+            const res = await http({ url: `/index/getFloorAndVolumeTrend/${time}` });
+            return (res as { data: IndexTrendData }).data;
         },
     });
 }
