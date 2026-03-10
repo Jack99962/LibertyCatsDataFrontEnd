@@ -3,8 +3,7 @@ import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, L
 import { useTimeRange } from '../contexts/TimeRangeContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { React } from 'react';
-import { useCollectionDetail } from '../../services';
-import { useEffect } from "react";
+import { useIndexTop, type IndexTopTime } from '../../services';
 // Mock data generator based on time range
 const generateTrendData = (range: '24H' | '7D' | '30D') => {
   const dataPoints = range === '24H' ? 24 : range === '7D' ? 7 : 28;
@@ -17,12 +16,31 @@ const generateTrendData = (range: '24H' | '7D' | '30D') => {
   }));
 };
 
+const timeRangeToBackend: Record<string, IndexTopTime> = {
+  '24H': '1d',
+  '7D': '7d',
+  '30D': '30d',
+  'ALL': 'all',
+};
+
+function formatVolume(value: number): string {
+  if (value >= 1_000_000) return `¥${(value / 1_000_000).toFixed(2)}M`;
+  if (value >= 1_000) return `¥${(value / 1_000).toFixed(2)}K`;
+  return `¥${value.toFixed(2)}`;
+}
+
 export function Overview() {
   const { timeRange } = useTimeRange();
   const { t } = useLanguage();
   const trendData = generateTrendData(timeRange);
   const xAxisKey = timeRange === '24H' ? 'h' : 'day';
-  const { data, error, isError, isPending: isPendingDetail } = useCollectionDetail()
+  const backendTime = timeRangeToBackend[timeRange] ?? '1d';
+  const { data, isPending } = useIndexTop(backendTime);
+
+  const detail = data?.detail as any;
+  const floorPrice = Number(detail?.stats.floorPrice).toFixed(2) ?? '--';
+  const volumeStr = data != null ? formatVolume(Number(data.volume)) : '--';
+  const transactionsStr = data != null ? String(data.transactions) : '--';
 
   return (
     <div className="space-y-4">
@@ -32,21 +50,21 @@ export function Overview() {
         <KPICard
           icon={<DollarSign className="w-5 h-5" />}
           label={t('overview.floorPrice')}
-          value={`11`}
+          value={isPending ? '...' : String(floorPrice)}
           change="+12.65%"
           trend="up"
         />
         <KPICard
           icon={<DollarSign className="w-5 h-5" />}
           label={`${timeRange} ${t('overview.volume')}`}
-          value="¥316.58M"
+          value={isPending ? '...' : volumeStr}
           change="+38.3%"
           trend="up"
         />
         <KPICard
           icon={<ShoppingCart className="w-5 h-5" />}
           label={`${timeRange} ${t('overview.transactions')}`}
-          value="15263"
+          value={isPending ? '...' : transactionsStr}
           change="+24.4%"
           trend="up"
         />
@@ -142,10 +160,10 @@ function KPICard({
         <span className="text-xs">{label}</span>
       </div>
       <div className="text-xl font-bold text-gray-900 mb-1">{value}</div>
-      <div className={`flex items-center gap-1 text-xs font-medium ${trend === 'up' ? 'text-green-600' : 'text-red-600'}`}>
+      {/* <div className={`flex items-center gap-1 text-xs font-medium ${trend === 'up' ? 'text-green-600' : 'text-red-600'}`}>
         {trend === 'up' ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
         <span>{change}</span>
-      </div>
+      </div> */}
     </div>
   );
 }
