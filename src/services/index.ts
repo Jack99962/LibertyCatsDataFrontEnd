@@ -26,6 +26,11 @@ export interface IndexTrendData {
     points: IndexTrendPoint[];
 }
 
+export interface ActivityHeatmapPoint {
+    hour: string;
+    count: number;
+}
+
 /** 首页面板数据（集合详情 + 成交量 + 成交笔数），time 动态参数 */
 export const useIndexTop = (time: IndexTopTime) => {
     const { http } = useAxios();
@@ -48,6 +53,19 @@ export const useIndexTrend = (time: IndexTopTime) => {
         queryFn: async () => {
             const res = await http({ url: `/index/getFloorAndVolumeTrend/${time}` });
             return (res as { data: IndexTrendData }).data;
+        },
+    });
+}
+
+/** 24 小时交易热力图 */
+export const useActivityHeatmap = () => {
+    const { http } = useAxios();
+
+    return useQuery<ActivityHeatmapPoint[]>({
+        queryKey: ['get24HHeatmap'],
+        queryFn: async () => {
+            const res = await http({ url: '/activity/get24HHeatmap' });
+            return (res as { data: ActivityHeatmapPoint[] }).data;
         },
     });
 }

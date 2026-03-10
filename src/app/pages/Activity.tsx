@@ -2,9 +2,10 @@ import { Clock } from 'lucide-react';
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ScatterChart, Scatter } from 'recharts';
 import { useTimeRange } from '../contexts/TimeRangeContext';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useActivityHeatmap } from '../../services';
 
-// Mock data for 24H heatmap
-const heatmapData = [
+// 默认热力图数据（作为后端数据加载前的占位 & 兜底）
+const defaultHeatmapData = [
   { hour: '00', count: 11 },
   { hour: '01', count: 16 },
   { hour: '02', count: 1 },
@@ -47,44 +48,11 @@ const transactionData = Array.from({ length: 80 }, (_, i) => ({
 
 export function Activity() {
   const { t } = useLanguage();
+  const { data: heatmapData, isPending } = useActivityHeatmap();
+  const finalHeatmapData = heatmapData && heatmapData.length > 0 ? heatmapData : defaultHeatmapData;
 
   return (
     <div className="space-y-4">
-      {/* 24H Heatmap */}
-      <div className="bg-white rounded-2xl p-4 shadow-lg">
-        <h3 className="text-sm font-semibold mb-3 text-gray-700">{t('activity.heatmap')}</h3>
-        <div className="grid grid-cols-12 gap-1 mb-3">
-          {heatmapData.map((item) => (
-            <div
-              key={item.hour}
-              className="aspect-square rounded flex flex-col items-center justify-center text-xs"
-              style={{
-                backgroundColor:
-                  item.count === 0
-                    ? '#fef3c7'
-                    : item.count < 5
-                      ? '#fed7aa'
-                      : item.count < 10
-                        ? '#fdba74'
-                        : item.count < 15
-                          ? '#fb923c'
-                          : '#f97316',
-                color: item.count >= 10 ? 'white' : '#92400e',
-              }}
-            >
-              <span className="font-bold">{item.count}</span>
-            </div>
-          ))}
-        </div>
-        <div className="grid grid-cols-12 gap-1 text-[9px] text-gray-500 text-center">
-          {heatmapData.map((item) => (
-            <div key={item.hour}>{item.hour}</div>
-          ))}
-        </div>
-      </div>
-
-
-
 
       {/* Transaction Distribution */}
       <div className="bg-white rounded-2xl p-4 shadow-lg">
@@ -121,6 +89,39 @@ export function Activity() {
               <div className="text-gray-500">1.02 usd</div>
             </div>
           </div>
+        </div>
+      </div>
+      {/* 24H Heatmap */}
+      <div className="bg-white rounded-2xl p-4 shadow-lg">
+        <h3 className="text-sm font-semibold mb-3 text-gray-700">{t('activity.heatmap')}</h3>
+        <div className="grid grid-cols-12 gap-1 mb-3">
+          {finalHeatmapData.map((item) => (
+            <div
+              key={item.hour}
+              className="aspect-square rounded flex flex-col items-center justify-center text-xs"
+              style={{
+                backgroundColor:
+                  item.count === 0
+                    ? '#fef3c7'
+                    : item.count < 5
+                      ? '#fed7aa'
+                      : item.count < 10
+                        ? '#fdba74'
+                        : item.count < 15
+                          ? '#fb923c'
+                          : '#f97316',
+                color: item.count >= 10 ? 'white' : '#92400e',
+                opacity: isPending ? 0.6 : 1,
+              }}
+            >
+              <span className="font-bold">{item.count}</span>
+            </div>
+          ))}
+        </div>
+        <div className="grid grid-cols-12 gap-1 text-[9px] text-gray-500 text-center">
+          {finalHeatmapData.map((item) => (
+            <div key={item.hour}>{item.hour}</div>
+          ))}
         </div>
       </div>
 
