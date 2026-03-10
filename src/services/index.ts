@@ -51,6 +51,18 @@ export interface HolderTrendData {
     points: HolderTrendPoint[];
 }
 
+export interface HoldingChangeItem {
+    address: string;
+    change: number;
+    held: number;
+}
+
+export interface HoldingsTopChangeData {
+    time: IndexTopTime;
+    topIncrease: HoldingChangeItem[];
+    topReduction: HoldingChangeItem[];
+}
+
 /** 当前总持有人数 */
 export const useCurrentHoldersCount = () => {
     const { http } = useAxios();
@@ -112,6 +124,19 @@ export const useHolderTrend = () => {
         queryFn: async () => {
             const res = await http({ url: '/index/getHolderTrend' });
             return (res as { data: HolderTrendData }).data;
+        },
+    });
+}
+
+/** Top5 总量增/减持榜（按时间维度） */
+export const useHoldingsTopChange = (time: IndexTopTime) => {
+    const { http } = useAxios();
+
+    return useQuery<HoldingsTopChangeData>({
+        queryKey: ['getHoldingsTopChange', time],
+        queryFn: async () => {
+            const res = await http({ url: `/holdings/top-change/${time}` });
+            return (res as { data: HoldingsTopChangeData }).data;
         },
     });
 }

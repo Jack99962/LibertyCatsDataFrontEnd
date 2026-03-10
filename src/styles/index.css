@@ -1,3 +1,18 @@
 @import './fonts.css';
 @import './tailwind.css';
 @import './theme.css';
+
+/* 自定义条形图宽度动画：从 0 缓慢拉满当前宽度 */
+.bar-grow {
+  transform-origin: left;
+  animation: bar-grow 0.5s ease-in-out;
+}
+
+@keyframes bar-grow {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}

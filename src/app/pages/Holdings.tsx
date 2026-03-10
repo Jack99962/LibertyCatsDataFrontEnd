@@ -2,7 +2,7 @@ import { Users, TrendingUp, TrendingDown } from 'lucide-react';
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { useTimeRange } from '../contexts/TimeRangeContext';
 import { useLanguage } from '../contexts/LanguageContext';
-import { useAverageHolding, useCurrentHoldersCount } from '../../services';
+import { useAverageHolding, useCurrentHoldersCount, useHoldingsTopChange, type IndexTopTime } from '../../services';
 
 // Mock data generator for holder trends based on time range
 const generateHolderTrendData = (range: '24H' | '7D' | '30D') => {
@@ -45,30 +45,33 @@ const holderChangesData = [
   { category: '>100猫党', change: 0, color: '#a3e635' },
 ];
 
-// Top 5 reduction and increase
-const topReduction = [
-  { address: 'ff64', count: 14, held: 3 },
-  { address: 'db07', count: 5, held: 3 },
-  { address: 'fb2f', count: 4, held: 0 },
-  { address: 'b8ea', count: 3, held: 0 },
-  { address: 'e4df', count: 3, held: 1 },
-];
+// 地址脱敏显示：首尾各 4 位，中间用 4 个 * 代替
+const formatAddress = (address: string) => {
+  if (!address) return '';
+  if (address.length <= 8) return address;
+  return `${address.slice(0, 4)}****${address.slice(-4)}`;
+};
 
-const topIncrease = [
-  { address: 'ff64', count: 17, held: 3 },
-  { address: 'f699', count: 8, held: 0 },
-  { address: 'f308', count: 6, held: 12 },
-  { address: '45ce', count: 4, held: 24 },
-  { address: '24d7', count: 4, held: 52 },
-];
+// 前端时间范围到后端参数映射
+const timeRangeToBackend: Record<string, IndexTopTime> = {
+  '24H': '1d',
+  '7D': '7d',
+  '30D': '30d',
+  'ALL': '7d',
+};
 
 export function Holdings() {
   const { timeRange } = useTimeRange();
   const { t } = useLanguage();
   const { data: currentHoldersCount } = useCurrentHoldersCount();
   const { data: averageHolding } = useAverageHolding();
+  const backendTime = timeRangeToBackend[timeRange] ?? '7d';
+  const { data: holdingsTopChange } = useHoldingsTopChange(backendTime);
   const holderTrendData = generateHolderTrendData(timeRange);
   const xAxisKey = timeRange === '24H' ? 'h' : 'day';
+
+  const topReduction = holdingsTopChange?.topReduction ?? [];
+  const topIncrease = holdingsTopChange?.topIncrease ?? [];
 
   return (
     <div className="space-y-4">
@@ -127,7 +130,7 @@ export function Holdings() {
       </div> */}
 
       {/* Holder Changes by Category */}
-      {/* <div className="bg-white rounded-2xl p-4 shadow-lg">
+      <div className="bg-white rounded-2xl p-4 shadow-lg">
         <h3 className="text-sm font-semibold mb-3 text-gray-700">持猫党人数变化</h3>
         <div className="space-y-2">
           {holderChangesData.map((item) => (
@@ -158,7 +161,7 @@ export function Holdings() {
             </div>
           ))}
         </div>
-      </div> */}
+      </div>
 
       {/* Shelves Count */}
       {/* <div className="bg-white rounded-2xl p-4 shadow-lg">
@@ -189,10 +192,13 @@ export function Holdings() {
             {topReduction.map((item, idx) => (
               <div key={item.address} className="space-y-1">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="font-medium">{item.address}</span>
-                  <span className="font-bold">{item.count}</span>
+                  <span className="font-medium">{formatAddress(item.address)}</span>
+                  <span className="font-bold">{item.change}</span>
                 </div>
-                <div className="h-6 bg-gradient-to-r from-emerald-400 to-emerald-500 rounded" style={{ width: `${(item.count / 14) * 100}%` }}></div>
+                <div
+                  className="h-6 bg-gradient-to-r from-orange-400 to-orange-500 rounded bar-grow"
+                  style={{ width: `${(item.change / (topReduction[0]?.change || item.change || 1)) * 100}%` }}
+                ></div>
                 <div className="text-[10px] text-gray-500">持仓{item.held}</div>
               </div>
             ))}
@@ -206,10 +212,13 @@ export function Holdings() {
             {topIncrease.map((item, idx) => (
               <div key={item.address} className="space-y-1">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="font-medium">{item.address}</span>
-                  <span className="font-bold">{item.count}</span>
+                  <span className="font-medium">{formatAddress(item.address)}</span>
+                  <span className="font-bold">{item.change}</span>
                 </div>
-                <div className="h-6 bg-gradient-to-r from-emerald-400 to-emerald-500 rounded" style={{ width: `${(item.count / 17) * 100}%` }}></div>
+                <div
+                  className="h-6 bg-gradient-to-r from-orange-400 to-orange-500 rounded bar-grow"
+                  style={{ width: `${(item.change / (topIncrease[0]?.change || item.change || 1)) * 100}%` }}
+                ></div>
                 <div className="text-[10px] text-gray-500">持仓{item.held}</div>
               </div>
             ))}
