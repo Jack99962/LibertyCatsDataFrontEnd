@@ -3,7 +3,7 @@ import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, Cart
 import { useState } from 'react';
 import { useTimeRange } from '../contexts/TimeRangeContext';
 import { useLanguage } from '../contexts/LanguageContext';
-import { useAverageHolding, useCurrentHoldersCount, useHoldingsTopChange, useHoldingBucketChange, type IndexTopTime } from '../../services';
+import { useAverageHolding, useCurrentHoldersCount, useHoldingsTopChange, useHoldingBucketChange, useHoldingBucketDistribution, type IndexTopTime } from '../../services';
 
 // Mock data generator for holder trends based on time range
 const generateHolderTrendData = (range: '24H' | '7D' | '30D') => {
@@ -19,16 +19,6 @@ const generateHolderTrendData = (range: '24H' | '7D' | '30D') => {
   }
   return result;
 };
-
-// Holdings distribution data
-const holdingDistribution = [
-  { name: '一猫党', value: 64.5, count: 1900, color: '#10b981' },
-  { name: '2-3猫党', value: 22.1, count: 651, color: '#fb923c' },
-  { name: '4-10猫党', value: 8.6, count: 253, color: '#f97316' },
-  { name: '11-50猫党', value: 4.3, count: 126, color: '#0ea5e9' },
-  { name: '51-100猫党', value: 0.3, count: 9, color: '#a78bfa' },
-  { name: '>100猫党', value: 0.2, count: 6, color: '#6b7280' },
-];
 
 // Holding period distribution
 const holdingPeriodData = [
@@ -72,11 +62,25 @@ export function Holdings() {
   const backendTime = timeRangeToBackend[timeRange] ?? '7d';
   const { data: holdingsTopChange } = useHoldingsTopChange(backendTime);
   const { data: holdingBucketChange } = useHoldingBucketChange(backendTime);
+  const { data: holdingBucketDistribution } = useHoldingBucketDistribution();
   const holderTrendData = generateHolderTrendData(timeRange);
   const xAxisKey = timeRange === '24H' ? 'h' : 'day';
 
   const topReduction = holdingsTopChange?.topReduction ?? [];
   const topIncrease = holdingsTopChange?.topIncrease ?? [];
+  const totalHolders = holdingBucketDistribution?.totalHolders ?? 0;
+  const holdingDistribution = HOLDER_BUCKET_CONFIG.map((item) => {
+    const count = holdingBucketDistribution?.buckets[item.key] ?? 0;
+    const value =
+      totalHolders > 0 ? Number(((count / totalHolders) * 100).toFixed(1)) : 0;
+    return {
+      name: item.label,
+      value,
+      count,
+      color: item.color,
+    };
+  });
+
 
   const [activeDistributionIndex, setActiveDistributionIndex] = useState<number | null>(null);
 

@@ -1,9 +1,9 @@
-import { TrendingUp, TrendingDown, DollarSign, ShoppingCart, Package } from 'lucide-react';
-import { ComposedChart, Line, LineChart, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { useTimeRange } from '../contexts/TimeRangeContext';
-import { useLanguage } from '../contexts/LanguageContext';
+import { DollarSign, Package, ShoppingCart } from 'lucide-react';
 import { React, useMemo } from 'react';
-import { useIndexTop, useIndexTrend, useHolderTrend, type IndexTopTime } from '../../services';
+import { Bar, CartesianGrid, ComposedChart, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { useHolderTrend, useIndexTop, useIndexTrend, type IndexTopTime } from '../../services';
+import { useLanguage } from '../contexts/LanguageContext';
+import { useTimeRange } from '../contexts/TimeRangeContext';
 
 const timeRangeToBackend: Record<string, IndexTopTime> = {
   '24H': '1d',
