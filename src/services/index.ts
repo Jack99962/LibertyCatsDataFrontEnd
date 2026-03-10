@@ -77,6 +77,11 @@ export interface HoldingBucketChangeData {
     buckets: HoldingBucketChangeBuckets;
 }
 
+export interface HoldingBucketDistributionData {
+  totalHolders: number;
+  buckets: HoldingBucketChangeBuckets;
+}
+
 /** 当前总持有人数 */
 export const useCurrentHoldersCount = () => {
     const { http } = useAxios();
@@ -166,6 +171,19 @@ export const useHoldingBucketChange = (time: IndexTopTime) => {
             return (res as { data: HoldingBucketChangeData }).data;
         },
     });
+}
+
+/** 当前各持仓桶持猫党分布（用于 Holdings 环形图） */
+export const useHoldingBucketDistribution = () => {
+  const { http } = useAxios();
+
+  return useQuery<HoldingBucketDistributionData>({
+    queryKey: ['getHoldingBucketDistribution'],
+    queryFn: async () => {
+      const res = await http({ url: '/holdings/bucket-distribution' });
+      return (res as { data: HoldingBucketDistributionData }).data;
+    },
+  });
 }
 
 /** 24 小时交易热力图 */

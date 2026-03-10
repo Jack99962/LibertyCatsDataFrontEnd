@@ -1,5 +1,6 @@
 import { Users, TrendingUp, TrendingDown } from 'lucide-react';
-import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Sector, Label } from 'recharts';
+import { useState } from 'react';
 import { useTimeRange } from '../contexts/TimeRangeContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useAverageHolding, useCurrentHoldersCount, useHoldingsTopChange, useHoldingBucketChange, type IndexTopTime } from '../../services';
@@ -60,7 +61,7 @@ const timeRangeToBackend: Record<string, IndexTopTime> = {
   '24H': '1d',
   '7D': '7d',
   '30D': '30d',
-  'ALL': '7d',
+  'ALL': 'all',
 };
 
 export function Holdings() {
@@ -76,6 +77,21 @@ export function Holdings() {
 
   const topReduction = holdingsTopChange?.topReduction ?? [];
   const topIncrease = holdingsTopChange?.topIncrease ?? [];
+
+  const [activeDistributionIndex, setActiveDistributionIndex] = useState<number | null>(null);
+
+  const handleDistributionSliceClick = (_: unknown, index: number) => {
+    setActiveDistributionIndex((prev) => (prev === index ? null : index));
+  };
+
+  const handleDistributionLegendClick = (index: number) => {
+    setActiveDistributionIndex((prev) => (prev === index ? null : index));
+  };
+
+  const renderActiveDistributionShape = (props: any) => {
+    const { outerRadius, ...rest } = props;
+    return <Sector {...rest} outerRadius={outerRadius + 6} />;
+  };
 
   return (
     <div className="space-y-4">
@@ -146,29 +162,29 @@ export function Holdings() {
             return (
               <div key={item.key} className="flex items-center gap-2">
                 <div className="w-24 text-xs text-gray-600">{item.label}:</div>
-              <div className="flex-1 flex items-center gap-2">
-                <div className="flex-1 h-6 bg-gray-100 rounded-lg overflow-hidden flex items-center">
-                  {change !== 0 && (
-                    <div
-                      className="h-full flex items-center justify-center text-white text-xs font-bold"
-                      style={{
-                        width: `${widthPercent}%`,
-                        backgroundColor: item.color,
-                        marginLeft: change < 0 ? '0' : 'auto',
-                      }}
-                    >
-                      {displayValue}
-                    </div>
-                  )}
-                </div>
-                <div
-                  className="w-8 h-6 rounded flex items-center justify-center text-white text-xs font-bold"
-                  style={{ backgroundColor: item.color }}
-                >
-                  {displayValue}
+                <div className="flex-1 flex items-center gap-2">
+                  <div className="flex-1 h-6 bg-gray-100 rounded-lg overflow-hidden flex items-center">
+                    {change !== 0 && (
+                      <div
+                        className="h-full flex items-center justify-center text-white text-xs font-bold"
+                        style={{
+                          width: `${widthPercent}%`,
+                          backgroundColor: item.color,
+                          marginLeft: change < 0 ? '0' : 'auto',
+                        }}
+                      >
+                        {displayValue}
+                      </div>
+                    )}
+                  </div>
+                  <div
+                    className="w-8 h-6 rounded flex items-center justify-center text-white text-xs font-bold"
+                    style={{ backgroundColor: item.color }}
+                  >
+                    {displayValue}
+                  </div>
                 </div>
               </div>
-            </div>
             );
           })}
         </div>
@@ -251,18 +267,45 @@ export function Holdings() {
                 innerRadius={35}
                 outerRadius={60}
                 paddingAngle={2}
-                dataKey="value"
+                dataKey="count"
+                activeIndex={activeDistributionIndex ?? undefined}
+                activeShape={renderActiveDistributionShape}
+                onClick={handleDistributionSliceClick}
               >
                 {holdingDistribution.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={entry.color} />
                 ))}
+                <Label
+                  position="center"
+                  content={(props: any) => {
+                    const { viewBox } = props;
+                    if (!viewBox || activeDistributionIndex === null) return null;
+                    const { cx, cy } = viewBox as { cx: number; cy: number };
+                    const activeItem = holdingDistribution[activeDistributionIndex];
+                    if (!activeItem) return null;
+                    return (
+                      <text
+                        x={cx}
+                        y={cy}
+                        textAnchor="middle"
+                        dominantBaseline="middle"
+                        className="text-xs font-bold fill-gray-800"
+                      >
+                        {activeItem.count}
+                      </text>
+                    );
+                  }}
+                />
               </Pie>
-              <Tooltip />
             </PieChart>
           </ResponsiveContainer>
           <div className="mt-2 space-y-1">
-            {holdingDistribution.map((item) => (
-              <div key={item.name} className="flex items-center justify-between text-[10px]">
+            {holdingDistribution.map((item, index) => (
+              <div
+                key={item.name}
+                className="flex items-center justify-between text-[10px] cursor-pointer"
+                onClick={() => handleDistributionLegendClick(index)}
+              >
                 <div className="flex items-center gap-1">
                   <div className="w-2 h-2 rounded-full" style={{ backgroundColor: item.color }}></div>
                   <span>{item.name}</span>
