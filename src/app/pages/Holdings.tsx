@@ -7,7 +7,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 const generateHolderTrendData = (range: '24H' | '7D' | '30D') => {
   const dataPoints = range === '24H' ? 24 : range === '7D' ? 7 : 28;
   const label = range === '24H' ? 'h' : 'day';
-  
+
   return Array.from({ length: dataPoints }, (_, i) => ({
     [label]: i + 1,
     holders: 115 + Math.floor(Math.random() * 40),
@@ -96,7 +96,7 @@ export function Holdings() {
       </div>
 
       {/* Holder Trend Chart */}
-      <div className="bg-white rounded-2xl p-4 shadow-lg">
+      {/* <div className="bg-white rounded-2xl p-4 shadow-lg">
         <h3 className="text-sm font-semibold mb-3 text-gray-700">{t('holdings.trend')} ({timeRange})</h3>
         <ResponsiveContainer width="100%" height={200}>
           <LineChart data={holderTrendData}>
@@ -117,10 +117,10 @@ export function Holdings() {
           <span>115 (1.48%)</span>
           <span>150 (1.93%)</span>
         </div>
-      </div>
+      </div> */}
 
       {/* Holder Changes by Category */}
-      <div className="bg-white rounded-2xl p-4 shadow-lg">
+      {/* <div className="bg-white rounded-2xl p-4 shadow-lg">
         <h3 className="text-sm font-semibold mb-3 text-gray-700">持猫党人数变化</h3>
         <div className="space-y-2">
           {holderChangesData.map((item) => (
@@ -151,10 +151,10 @@ export function Holdings() {
             </div>
           ))}
         </div>
-      </div>
+      </div> */}
 
       {/* Shelves Count */}
-      <div className="bg-white rounded-2xl p-4 shadow-lg">
+      {/* <div className="bg-white rounded-2xl p-4 shadow-lg">
         <h3 className="text-sm font-semibold mb-3 text-gray-700">藏品上架数</h3>
         <ResponsiveContainer width="100%" height={180}>
           <LineChart data={holderTrendData}>
@@ -171,7 +171,7 @@ export function Holdings() {
             />
           </LineChart>
         </ResponsiveContainer>
-      </div>
+      </div> */}
 
       {/* Top 5 Reduction and Increase */}
       <div className="grid grid-cols-2 gap-3">

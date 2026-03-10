@@ -56,7 +56,7 @@ export function Overview() {
   const floorPrice = Number(detail?.stats.floorPrice).toFixed(2) ?? '--';
   const volumeStr = data != null ? formatVolume(Number(data.volume)) : '--';
   const transactionsStr = data != null ? String(data.transactions) : '--';
-
+  const totalCount = data != null ? String(data.totalCount) : '--';
   const formatRange = (startMs: number, endMs: number) => {
     const pad2 = (n: number) => {
       const s = String(n);
@@ -121,7 +121,7 @@ export function Overview() {
         <KPICard
           icon={<Package className="w-5 h-5" />}
           label={t('overview.totalNumber')}
-          value="102"
+          value={isPending ? '...' : totalCount}
           change="+24.4%"
           trend="up"
         />
