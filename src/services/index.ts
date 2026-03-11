@@ -39,6 +39,16 @@ export interface ActivityScatterPoint {
     price: number;
 }
 
+export interface ActivityTopBottomItem {
+  tokenId: string;
+  price: number;
+}
+
+export interface ActivityTopBottomData {
+  top: ActivityTopBottomItem | null;
+  bottom: ActivityTopBottomItem | null;
+}
+
 export interface HolderTrendPoint {
     index: number;
     label: string;
@@ -243,6 +253,19 @@ export const useActivityScatter = (time: IndexTopTime) => {
         },
     });
 }
+
+/** 最高/最低成交（Activity 页面） */
+export const useActivityTopAndBottom = (time: IndexTopTime) => {
+  const { http } = useAxios();
+
+  return useQuery<ActivityTopBottomData>({
+    queryKey: ['getTopAndBottom', time],
+    queryFn: async () => {
+      const res = await http({ url: `/activity/getTopAndBottom/${time}` });
+      return (res as { data: ActivityTopBottomData }).data;
+    },
+  });
+};
 
 /** 查询集合详情（仅详情，无时间维度）*/
 export const useCollectionDetail = () => {

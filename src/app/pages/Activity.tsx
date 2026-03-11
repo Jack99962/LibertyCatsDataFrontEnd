@@ -1,8 +1,10 @@
 import { Clock } from 'lucide-react';
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ScatterChart, Scatter } from 'recharts';
+import { useEffect, useMemo, useState } from 'react';
 import { useTimeRange } from '../contexts/TimeRangeContext';
 import { useLanguage } from '../contexts/LanguageContext';
-import { useActivityHeatmap, useActivityScatter, type IndexTopTime } from '../../services';
+import { useActivityHeatmap, useActivityScatter, useActivityTopAndBottom, type IndexTopTime } from '../../services';
+import { useAxios } from '../../hooks/useAxios';
 
 // 默认热力图数据（作为后端数据加载前的占位 & 兜底）
 const defaultHeatmapData = [
@@ -52,6 +54,64 @@ export function Activity() {
   const { timeRange } = useTimeRange();
   const backendTime = timeRangeToBackend[timeRange] ?? '7d';
   const { data: scatterData, isPending: isScatterPending } = useActivityScatter(backendTime);
+  const { data: topBottomData, isPending: isTopBottomPending } = useActivityTopAndBottom(backendTime);
+  const { http } = useAxios();
+
+  const cards = useMemo(
+    () => {
+      const top = topBottomData?.top;
+      const bottom = topBottomData?.bottom;
+      return [
+        {
+          key: 'top1',
+          label: t('activity.top1'),
+          tokenId: top?.tokenId ?? '',
+          priceLabel: typeof top?.price === 'number' ? `${top.price} USD` : isTopBottomPending ? '...' : '-',
+        },
+        {
+          key: 'bottom',
+          label: t('activity.bottom'),
+          tokenId: bottom?.tokenId ?? '',
+          priceLabel: typeof bottom?.price === 'number' ? `${bottom.price} USD` : isTopBottomPending ? '...' : '-',
+        },
+      ];
+    },
+    [t, topBottomData, isTopBottomPending],
+  );
+
+  const [imageByTokenId, setImageByTokenId] = useState<Record<string, string | null>>({});
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const load = async () => {
+      const tokenIds: string[] = [];
+      for (const c of cards) {
+        if (!c.tokenId) continue;
+        if (tokenIds.indexOf(c.tokenId) === -1) tokenIds.push(c.tokenId);
+      }
+      await Promise.all(
+        tokenIds.map(async (tokenId) => {
+          try {
+            const res = await http.get(`/nft/image/${tokenId}`);
+            const imageUrl = (res as { data?: { imageUrl?: string | null } })?.data?.imageUrl ?? null;
+            if (!cancelled) {
+              setImageByTokenId((prev) => (prev[tokenId] === imageUrl ? prev : { ...prev, [tokenId]: imageUrl }));
+            }
+          } catch {
+            if (!cancelled) {
+              setImageByTokenId((prev) => (prev[tokenId] === null ? prev : { ...prev, [tokenId]: null }));
+            }
+          }
+        }),
+      );
+    };
+
+    void load();
+    return () => {
+      cancelled = true;
+    };
+  }, [cards, http]);
 
   const finalScatterData =
     scatterData?.map((item) => ({
@@ -120,28 +180,26 @@ export function Activity() {
           </ScatterChart>
         </ResponsiveContainer>
         <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
-          <div className="flex items-center gap-2">
-            <img
-              src="figma:asset/49c8d247271c35d7d5ac6b2296eeeb4783a051bd.png"
-              alt="top1"
-              className="w-8 h-8 rounded-lg object-cover"
-            />
-            <div>
-              <div className="font-semibold">{t('activity.top1')}: #9202</div>
-              <div className="text-gray-500">17999 USD</div>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <img
-              src="figma:asset/49c8d247271c35d7d5ac6b2296eeeb4783a051bd.png"
-              alt="bottom"
-              className="w-8 h-8 rounded-lg object-cover"
-            />
-            <div>
-              <div className="font-semibold">{t('activity.bottom')}: #6759</div>
-              <div className="text-gray-500">1.02 USD</div>
-            </div>
-          </div>
+          {cards.map((card) => {
+            const imageUrl = imageByTokenId[card.tokenId];
+            return (
+              <div key={card.key} className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center">
+                  {typeof imageUrl === 'string' && imageUrl.length > 0 ? (
+                    <img src={imageUrl} alt={card.key} className="w-8 h-8 object-cover" />
+                  ) : (
+                    <Clock className="w-4 h-4 text-gray-400" />
+                  )}
+                </div>
+                <div>
+                  <div className="font-semibold">
+                    {card.label}: {card.tokenId ? `#${card.tokenId}` : isTopBottomPending ? '...' : '#-'}
+                  </div>
+                  <div className="text-gray-500">{card.priceLabel}</div>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
       {/* 24H Heatmap */}
