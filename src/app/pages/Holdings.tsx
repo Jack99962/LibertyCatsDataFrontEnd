@@ -31,12 +31,13 @@ const HOLDING_DURATION_CONFIG = [
 ];
 
 const HOLDER_BUCKET_CONFIG = [
-  { key: 'oneCat' as const, label: '一猫党', color: '#06b6d4' },
-  { key: 'twoToThreeCats' as const, label: '2-3猫党', color: '#fb923c' },
-  { key: 'fourToTenCats' as const, label: '4-10猫党', color: '#f87171' },
-  { key: 'elevenToFiftyCats' as const, label: '11-50猫党', color: '#60a5fa' },
-  { key: 'fiftyOneToHundredCats' as const, label: '51-100猫党', color: '#f87171' },
-  { key: 'moreThanHundredCats' as const, label: '>100猫党', color: '#a3e635' },
+  // 以品牌主色 #ff6900 为核心的协调配色（同色系 + 互补的青绿点缀）
+  { key: 'oneCat' as const, label: '一猫党', color: '#ff6900' },
+  { key: 'twoToThreeCats' as const, label: '2-3猫党', color: '#ff8f3d' },
+  { key: 'fourToTenCats' as const, label: '4-10猫党', color: '#f04e23' },
+  { key: 'elevenToFiftyCats' as const, label: '11-50猫党', color: '#2a9d8f' },
+  { key: 'fiftyOneToHundredCats' as const, label: '51-100猫党', color: '#b36b00' },
+  { key: 'moreThanHundredCats' as const, label: '>100猫党', color: '#6a994e' },
 ];
 
 // 地址脱敏显示：首尾各 4 位，中间用 4 个 * 代替
@@ -200,7 +201,7 @@ export function Holdings() {
               <div key={item.key} className="flex items-center gap-2">
                 <div className="w-24 text-xs text-gray-600">{item.label}:</div>
                 <div className="flex-1 flex items-center gap-2">
-                  <div className="flex-1 h-6 bg-gray-100 rounded-lg overflow-hidden flex items-center">
+                  <div className="flex-1 h-6 bg-orange-50 rounded-lg overflow-hidden flex items-center">
                     {change !== 0 && (
                       <div
                         className="h-full flex items-center justify-center text-white text-xs font-bold"
