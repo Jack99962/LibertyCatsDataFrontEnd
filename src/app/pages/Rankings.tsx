@@ -61,8 +61,7 @@ export function Rankings() {
     };
   }, [http]);
 
-  const topNotes = useMemo(() => top30Addresses.slice(0, 3).filter((it) => !!it.note), [top30Addresses]);
-
+  const topNotes = useMemo(() => top30Addresses.filter((it) => !!it.note), [top30Addresses]);
   return (
     <div className="space-y-4">
       {/* Top 30 Addresses Table */}
@@ -98,9 +97,6 @@ export function Rankings() {
                       {item.isOfficial && (
                         <Star className="w-3 h-3" style={{ color: '#ff6900' }} />
                       )}
-                      {item.isCreator && (
-                        <Star className="w-3 h-3" style={{ color: '#ff6900' }} />
-                      )}
                     </div>
                   </td>
                   <td className="py-2 text-right text-gray-600">{item.lastMonth}</td>
@@ -120,11 +116,14 @@ export function Rankings() {
             </tbody>
           </table>
         </div>
-        {topNotes.map((item) => (
-          <div key={item.fullAddress ?? item.address} className="mt-2 text-[10px] text-gray-500 bg-orange-50 p-2 rounded">
-            <span className="font-semibold">{item.address}</span>: {item.note}
-          </div>
-        ))}
+        <div className='flex flex-wrap gap-2'>
+
+          {topNotes.map((item) => (
+            <div key={item.fullAddress ?? item.address} className="mt-2 text-[10px] text-gray-500 bg-orange-50 p-2 rounded">
+              <span className="font-semibold text-[#ff6900]">{item.address}</span>: {item.note}
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Send and Receive TOP10 */}
@@ -166,10 +165,10 @@ export function Rankings() {
 
       {/* Data Source */}
       <div className="bg-orange-50 rounded-2xl p-3 text-xs text-gray-600 text-center">
-        引用数据报告自 oklink、NFTSCAN、Coingecko 26年2月1日 至 2月28日
+        引用数据报告自 Polygonscan 以及 OKX Api
         <br />
-        幻灵友情制作，仅供参考
+        Jack-hu 制作，仅供参考
       </div>
-    </div>
+    </div >
   );
 }
