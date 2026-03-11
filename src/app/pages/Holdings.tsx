@@ -20,24 +20,24 @@ const generateHolderTrendData = (range: '24H' | '7D' | '30D') => {
   return result;
 };
 
-// 持猫时间分布：后端 bucket key -> 展示名 + 颜色（与圆环图一致）
+// 持猫时间分布：后端 bucket key -> i18n key + 颜色（与圆环图一致）
 const HOLDING_DURATION_CONFIG = [
-  { key: 'gt1Year' as const, name: '>1Y', color: '#10b981' },
-  { key: 'threeMonthsToOneYear' as const, name: '3M-1Y', color: '#fb923c' },
-  { key: 'thirtyDaysToThreeMonths' as const, name: '30-3M', color: '#f97316' },
-  { key: 'sevenToThirtyDays' as const, name: '7-30D', color: '#0ea5e9' },
-  { key: 'oneToSevenDays' as const, name: '1-7D', color: '#a78bfa' },
-  { key: 'lessThan24Hours' as const, name: '<24H', color: '#fbbf24' },
+  { key: 'gt1Year' as const, i18nKey: 'holdings.duration.gt1Year', color: '#10b981' },
+  { key: 'threeMonthsToOneYear' as const, i18nKey: 'holdings.duration.threeMonthsToOneYear', color: '#fb923c' },
+  { key: 'thirtyDaysToThreeMonths' as const, i18nKey: 'holdings.duration.thirtyDaysToThreeMonths', color: '#f97316' },
+  { key: 'sevenToThirtyDays' as const, i18nKey: 'holdings.duration.sevenToThirtyDays', color: '#0ea5e9' },
+  { key: 'oneToSevenDays' as const, i18nKey: 'holdings.duration.oneToSevenDays', color: '#a78bfa' },
+  { key: 'lessThan24Hours' as const, i18nKey: 'holdings.duration.lessThan24Hours', color: '#fbbf24' },
 ];
 
 const HOLDER_BUCKET_CONFIG = [
   // 以品牌主色 #ff6900 为核心的协调配色（同色系 + 互补的青绿点缀）
-  { key: 'oneCat' as const, label: '一猫党', color: '#ff6900' },
-  { key: 'twoToThreeCats' as const, label: '2-3猫党', color: '#ff8f3d' },
-  { key: 'fourToTenCats' as const, label: '4-10猫党', color: '#f04e23' },
-  { key: 'elevenToFiftyCats' as const, label: '11-50猫党', color: '#2a9d8f' },
-  { key: 'fiftyOneToHundredCats' as const, label: '51-100猫党', color: '#b36b00' },
-  { key: 'moreThanHundredCats' as const, label: '>100猫党', color: '#6a994e' },
+  { key: 'oneCat' as const, i18nKey: 'holdings.bucket.oneCat', color: '#ff6900' },
+  { key: 'twoToThreeCats' as const, i18nKey: 'holdings.bucket.twoToThreeCats', color: '#ff8f3d' },
+  { key: 'fourToTenCats' as const, i18nKey: 'holdings.bucket.fourToTenCats', color: '#f04e23' },
+  { key: 'elevenToFiftyCats' as const, i18nKey: 'holdings.bucket.elevenToFiftyCats', color: '#2a9d8f' },
+  { key: 'fiftyOneToHundredCats' as const, i18nKey: 'holdings.bucket.fiftyOneToHundredCats', color: '#b36b00' },
+  { key: 'moreThanHundredCats' as const, i18nKey: 'holdings.bucket.moreThanHundredCats', color: '#6a994e' },
 ];
 
 // 地址脱敏显示：首尾各 4 位，中间用 4 个 * 代替
@@ -76,7 +76,7 @@ export function Holdings() {
     const value =
       totalHolders > 0 ? Number(((count / totalHolders) * 100).toFixed(1)) : 0;
     return {
-      name: item.label,
+      name: t(item.i18nKey),
       value,
       count,
       color: item.color,
@@ -99,7 +99,7 @@ export function Holdings() {
         ? Number(((count / durationTotalTokens) * 100).toFixed(1))
         : 0;
     return {
-      name: item.name,
+      name: t(item.i18nKey),
       count,
       percentage,
       color: item.color,
@@ -189,7 +189,7 @@ export function Holdings() {
 
       {/* Holder Changes by Category */}
       <div className="bg-white rounded-2xl p-4 shadow-lg">
-        <h3 className="text-sm font-semibold mb-3 text-gray-700">持猫党人数变化</h3>
+        <h3 className="text-sm font-semibold mb-3 text-gray-700">{t('holdings.bucketChanges')}</h3>
         <div className="space-y-2">
           {HOLDER_BUCKET_CONFIG.map((item) => {
             const change = holdingBucketChange?.buckets[item.key] ?? 0;
@@ -199,7 +199,7 @@ export function Holdings() {
 
             return (
               <div key={item.key} className="flex items-center gap-2">
-                <div className="w-24 text-xs text-gray-600">{item.label}:</div>
+                <div className="w-24 text-xs text-gray-600">{t(item.i18nKey)}</div>
                 <div className="flex-1 flex items-center gap-2">
                   <div className="flex-1 h-6 bg-orange-50 rounded-lg overflow-hidden flex items-center">
                     {change !== 0 && (
@@ -252,7 +252,7 @@ export function Holdings() {
       <div className="grid grid-cols-2 gap-3">
         {/* Top 5 Reduction */}
         <div className="bg-white rounded-2xl p-4 shadow-lg">
-          <h3 className="text-xs font-semibold mb-3 text-gray-700">TOP5 总量 减持榜</h3>
+          <h3 className="text-xs font-semibold mb-3 text-gray-700">{t('holdings.top5Reduction')}</h3>
           <div className="space-y-2">
             {topReduction.map((item, idx) => (
               <div key={item.address} className="space-y-1">
@@ -264,7 +264,7 @@ export function Holdings() {
                   className="h-6 bg-gradient-to-r from-orange-400 to-orange-500 rounded bar-grow"
                   style={{ width: `${(item.change / (topReduction[0]?.change || item.change || 1)) * 100}%` }}
                 ></div>
-                <div className="text-[10px] text-gray-500">持仓{item.held}</div>
+                <div className="text-[10px] text-gray-500">{t('holdings.held')}{item.held}</div>
               </div>
             ))}
           </div>
@@ -272,7 +272,7 @@ export function Holdings() {
 
         {/* Top 5 Increase */}
         <div className="bg-white rounded-2xl p-4 shadow-lg">
-          <h3 className="text-xs font-semibold mb-3 text-gray-700">TOP5 总量 增持榜</h3>
+          <h3 className="text-xs font-semibold mb-3 text-gray-700">{t('holdings.top5Increase')}</h3>
           <div className="space-y-2">
             {topIncrease.map((item, idx) => (
               <div key={item.address} className="space-y-1">
@@ -284,7 +284,7 @@ export function Holdings() {
                   className="h-6 bg-gradient-to-r from-orange-400 to-orange-500 rounded bar-grow"
                   style={{ width: `${(item.change / (topIncrease[0]?.change || item.change || 1)) * 100}%` }}
                 ></div>
-                <div className="text-[10px] text-gray-500">持仓{item.held}</div>
+                <div className="text-[10px] text-gray-500">{t('holdings.held')}{item.held}</div>
               </div>
             ))}
           </div>
@@ -295,7 +295,7 @@ export function Holdings() {
       <div className="grid grid-cols-2 gap-3">
         {/* Holdings Distribution */}
         <div className="bg-white rounded-2xl p-4 shadow-lg">
-          <h3 className="text-xs font-semibold mb-3 text-center text-gray-700">持猫党分布</h3>
+          <h3 className="text-xs font-semibold mb-3 text-center text-gray-700">{t('holdings.bucketDistribution')}</h3>
           <ResponsiveContainer width="100%" height={150}>
             <PieChart>
               <Pie
@@ -356,7 +356,7 @@ export function Holdings() {
 
         {/* Holding Period Distribution */}
         <div className="bg-white rounded-2xl p-4 shadow-lg">
-          <h3 className="text-xs font-semibold mb-3 text-center text-gray-700">持猫时间分布</h3>
+          <h3 className="text-xs font-semibold mb-3 text-center text-gray-700">{t('holdings.durationDistribution')}</h3>
           <ResponsiveContainer width="100%" height={150}>
             <PieChart>
               <Pie

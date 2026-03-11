@@ -47,7 +47,7 @@ const timeRangeToBackend: Record<string, IndexTopTime> = {
 };
 
 export function Activity() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const { data: heatmapData, isPending } = useActivityHeatmap();
   const { timeRange } = useTimeRange();
   const backendTime = timeRangeToBackend[timeRange] ?? '7d';
@@ -60,12 +60,26 @@ export function Activity() {
     })) ?? [];
   const finalHeatmapData = heatmapData && heatmapData.length > 0 ? heatmapData : defaultHeatmapData;
 
+  const locale = language === 'zh' ? 'zh-CN' : language === 'ja' ? 'ja-JP' : 'en-US';
+  const formatTs = (value: number, withSeconds: boolean) => {
+    const d = new Date(value);
+    const formatter = new Intl.DateTimeFormat(locale, {
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: withSeconds ? '2-digit' : undefined,
+      hour12: false,
+    });
+    return formatter.format(d);
+  };
+
   return (
     <div className="space-y-4">
 
       {/* Transaction Distribution */}
       <div className="bg-white rounded-2xl p-4 shadow-lg">
-        <h3 className="text-sm font-semibold mb-3 text-gray-700">交易分布</h3>
+        <h3 className="text-sm font-semibold mb-3 text-gray-700">{t('activity.transactionDistribution')}</h3>
         <ResponsiveContainer width="100%" height={250}>
           <ScatterChart margin={{ top: 10, right: 10, bottom: 10, left: 10 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
@@ -74,30 +88,13 @@ export function Activity() {
               type="number"
               tick={{ fontSize: 10 }}
               domain={['auto', 'auto']}
-              tickFormatter={(value: number) => {
-                const d = new Date(value);
-                const pad2 = (n: number) => String(n).padStart(2, '0');
-                const month = pad2(d.getMonth() + 1);
-                const date = pad2(d.getDate());
-                const hours = pad2(d.getHours());
-                const minutes = pad2(d.getMinutes());
-                return `${month}-${date} ${hours}:${minutes}`;
-              }}
+              tickFormatter={(value: number) => formatTs(value, false)}
             />
             <YAxis dataKey="price" tick={{ fontSize: 10 }} />
             <Tooltip
               cursor={{ strokeDasharray: '3 3' }}
-              formatter={(value: any) => [value, 'Price']}
-              labelFormatter={(value: any) => {
-                const d = new Date(value);
-                const pad2 = (n: number) => String(n).padStart(2, '0');
-                const month = pad2(d.getMonth() + 1);
-                const date = pad2(d.getDate());
-                const hours = pad2(d.getHours());
-                const minutes = pad2(d.getMinutes());
-                const seconds = pad2(d.getSeconds());
-                return `${month}-${date} ${hours}:${minutes}:${seconds}`;
-              }}
+              formatter={(value: any) => [value, t('activity.price')]}
+              labelFormatter={(value: any) => formatTs(Number(value), true)}
             />
             <Scatter
               data={finalScatterData}
@@ -114,8 +111,8 @@ export function Activity() {
               className="w-8 h-8 rounded-lg object-cover"
             />
             <div>
-              <div className="font-semibold">top1: #9202</div>
-              <div className="text-gray-500">17999 usd</div>
+              <div className="font-semibold">{t('activity.top1')}: #9202</div>
+              <div className="text-gray-500">17999 USD</div>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -125,8 +122,8 @@ export function Activity() {
               className="w-8 h-8 rounded-lg object-cover"
             />
             <div>
-              <div className="font-semibold">bottom: #6759</div>
-              <div className="text-gray-500">1.02 usd</div>
+              <div className="font-semibold">{t('activity.bottom')}: #6759</div>
+              <div className="text-gray-500">1.02 USD</div>
             </div>
           </div>
         </div>

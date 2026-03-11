@@ -31,7 +31,7 @@ function formatHoldersAxis(value: number): string {
 
 export function Overview() {
   const { timeRange } = useTimeRange();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const backendTime = timeRangeToBackend[timeRange] ?? '1d';
   const { data, isPending } = useIndexTop(backendTime);
   const { data: trendRes, isPending: isTrendPending } = useIndexTrend(backendTime);
@@ -77,19 +77,28 @@ export function Overview() {
       <div className="rounded-lg bg-white shadow-lg border border-gray-100 px-3 py-2 text-xs text-gray-700">
         {/* <div className="font-semibold text-gray-900 mb-1">{formatRange(p.startTimeMs, p.endTimeMs)}</div> */}
         <div className="flex justify-between gap-6">
-          <span>平均成交价格</span>
+          <span>{t('overview.avgTradePrice')}</span>
           <span className="font-medium">{p.avgPrice == null ? '--' : Number(p.avgPrice).toFixed(2)}</span>
         </div>
         <div className="flex justify-between gap-6">
-          <span>交易额</span>
+          <span>{t('overview.tradeVolume')}</span>
           <span className="font-medium">{formatVolume(Number(p.volume))}</span>
         </div>
         <div className="flex justify-between gap-6">
-          <span>成交数量</span>
+          <span>{t('overview.tradeCount')}</span>
           <span className="font-medium">{String(p.count)}</span>
         </div>
       </div>
     );
+  };
+
+  const formatHourTick = (v: unknown) => {
+    const hour = typeof v === 'number' ? v : Number(v);
+    if (!Number.isFinite(hour)) return String(v);
+    const h = String(Math.round(hour));
+    if (language === 'en') return `${h}:00`;
+    if (language === 'ja') return `${h}時`;
+    return `${h}点`;
   };
 
   return (
@@ -138,7 +147,7 @@ export function Overview() {
               type={timeRange === '24H' ? 'number' : 'category'}
               domain={timeRange === '24H' ? [0, 24] : undefined}
               tick={{ fontSize: 10 }}
-              tickFormatter={(v) => (timeRange === '24H' ? `${v}点` : v)}
+              tickFormatter={(v) => (timeRange === '24H' ? formatHourTick(v) : String(v))}
             />
             <YAxis
               yAxisId="price"

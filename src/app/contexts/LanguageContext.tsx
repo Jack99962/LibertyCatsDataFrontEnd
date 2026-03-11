@@ -37,6 +37,9 @@ const translations = {
     'overview.price': '地板价 (USD)',
     'overview.volumeCount': '成交数 (pcs)',
     'overview.totalNumber': "藏品总数",
+    'overview.avgTradePrice': '平均成交价格',
+    'overview.tradeVolume': '交易额',
+    'overview.tradeCount': '成交数量',
 
     // Activity Page
     'activity.title': '市场活动',
@@ -49,6 +52,9 @@ const translations = {
     'activity.volume.label': '成交量',
     'activity.price': '价格区间',
     'activity.count': '成交数',
+    'activity.transactionDistribution': '交易分布',
+    'activity.top1': '最高价',
+    'activity.bottom': '最低价',
 
     // Holdings Page
     'holdings.title': '持仓分析',
@@ -62,6 +68,24 @@ const translations = {
     'holdings.small': '散户 (1-9)',
     'holdings.topHolders': 'Top 持有者',
     'holdings.cats': '只猫',
+    'holdings.bucketChanges': '持猫党人数变化',
+    'holdings.top5Reduction': 'TOP5 总量 减持榜',
+    'holdings.top5Increase': 'TOP5 总量 增持榜',
+    'holdings.held': '持仓',
+    'holdings.bucketDistribution': '持猫党分布',
+    'holdings.durationDistribution': '持猫时间分布',
+    'holdings.bucket.oneCat': '一猫党',
+    'holdings.bucket.twoToThreeCats': '2-3猫党',
+    'holdings.bucket.fourToTenCats': '4-10猫党',
+    'holdings.bucket.elevenToFiftyCats': '11-50猫党',
+    'holdings.bucket.fiftyOneToHundredCats': '51-100猫党',
+    'holdings.bucket.moreThanHundredCats': '>100猫党',
+    'holdings.duration.gt1Year': '>1Y',
+    'holdings.duration.threeMonthsToOneYear': '3M-1Y',
+    'holdings.duration.thirtyDaysToThreeMonths': '30-3M',
+    'holdings.duration.sevenToThirtyDays': '7-30D',
+    'holdings.duration.oneToSevenDays': '1-7D',
+    'holdings.duration.lessThan24Hours': '<24H',
 
     // Rankings Page
     'rankings.title': '地址排名',
@@ -100,6 +124,9 @@ const translations = {
     'overview.price': 'Floor Price (USD)',
     'overview.volumeCount': 'Volume (pcs)',
     'overview.totalNumber': 'Total Supply',
+    'overview.avgTradePrice': 'Avg Trade Price',
+    'overview.tradeVolume': 'Volume',
+    'overview.tradeCount': 'Trades',
 
 
     // Activity Page
@@ -113,6 +140,9 @@ const translations = {
     'activity.volume.label': 'Volume',
     'activity.price': 'Price Range',
     'activity.count': 'Count',
+    'activity.transactionDistribution': 'Transaction Distribution',
+    'activity.top1': 'Top',
+    'activity.bottom': 'Bottom',
 
     // Holdings Page
     'holdings.title': 'Holdings Analysis',
@@ -126,6 +156,24 @@ const translations = {
     'holdings.small': 'Small (1-9)',
     'holdings.topHolders': 'Top Holders',
     'holdings.cats': 'Cats',
+    'holdings.bucketChanges': 'Holders Change by Bucket',
+    'holdings.top5Reduction': 'TOP5 Total Reduction',
+    'holdings.top5Increase': 'TOP5 Total Increase',
+    'holdings.held': 'Held ',
+    'holdings.bucketDistribution': 'Holder Bucket Distribution',
+    'holdings.durationDistribution': 'Holding Duration Distribution',
+    'holdings.bucket.oneCat': '1 Cat',
+    'holdings.bucket.twoToThreeCats': '2-3 Cats',
+    'holdings.bucket.fourToTenCats': '4-10 Cats',
+    'holdings.bucket.elevenToFiftyCats': '11-50 Cats',
+    'holdings.bucket.fiftyOneToHundredCats': '51-100 Cats',
+    'holdings.bucket.moreThanHundredCats': '100+ Cats',
+    'holdings.duration.gt1Year': '>1Y',
+    'holdings.duration.threeMonthsToOneYear': '3M-1Y',
+    'holdings.duration.thirtyDaysToThreeMonths': '30D-3M',
+    'holdings.duration.sevenToThirtyDays': '7D-30D',
+    'holdings.duration.oneToSevenDays': '1D-7D',
+    'holdings.duration.lessThan24Hours': '<24H',
 
     // Rankings Page
     'rankings.title': 'Address Rankings',
@@ -164,6 +212,9 @@ const translations = {
     'overview.price': 'フロア価格 (USD)',
     'overview.volumeCount': '取引量 (個)',
     'overview.totalNumber': '総発行数',
+    'overview.avgTradePrice': '平均取引価格',
+    'overview.tradeVolume': '取引高',
+    'overview.tradeCount': '取引数',
 
     // Activity Page
     'activity.title': '市場活動',
@@ -176,6 +227,9 @@ const translations = {
     'activity.volume.label': '取引量',
     'activity.price': '価格帯',
     'activity.count': '件数',
+    'activity.transactionDistribution': '取引分布',
+    'activity.top1': '最高値',
+    'activity.bottom': '最安値',
 
     // Holdings Page
     'holdings.title': '保有分析',
@@ -189,6 +243,24 @@ const translations = {
     'holdings.small': '小口 (1-9)',
     'holdings.topHolders': 'トップホルダー',
     'holdings.cats': '匹',
+    'holdings.bucketChanges': '保有区分別の増減',
+    'holdings.top5Reduction': 'TOP5 総量 減少',
+    'holdings.top5Increase': 'TOP5 総量 増加',
+    'holdings.held': '保有',
+    'holdings.bucketDistribution': '保有区分分布',
+    'holdings.durationDistribution': '保有期間分布',
+    'holdings.bucket.oneCat': '1匹',
+    'holdings.bucket.twoToThreeCats': '2-3匹',
+    'holdings.bucket.fourToTenCats': '4-10匹',
+    'holdings.bucket.elevenToFiftyCats': '11-50匹',
+    'holdings.bucket.fiftyOneToHundredCats': '51-100匹',
+    'holdings.bucket.moreThanHundredCats': '100匹以上',
+    'holdings.duration.gt1Year': '>1Y',
+    'holdings.duration.threeMonthsToOneYear': '3M-1Y',
+    'holdings.duration.thirtyDaysToThreeMonths': '30日-3M',
+    'holdings.duration.sevenToThirtyDays': '7-30日',
+    'holdings.duration.oneToSevenDays': '1-7日',
+    'holdings.duration.lessThan24Hours': '<24H',
 
     // Rankings Page
     'rankings.title': 'アドレスランキング',

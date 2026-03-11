@@ -20,7 +20,7 @@ export function Layout() {
   const languages: { code: Language; label: string }[] = [
     { code: 'zh', label: '中' },
     { code: 'en', label: 'EN' },
-    { code: 'ja', label: '日' },
+    { code: 'ja', label: 'JP' },
   ];
 
   return (
