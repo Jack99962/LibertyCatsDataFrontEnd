@@ -82,6 +82,25 @@ export interface HoldingBucketDistributionData {
   buckets: HoldingBucketChangeBuckets;
 }
 
+/** 持猫时间分布：各时长区间的数量（百分比由前端可自行计算） */
+export interface HoldingDurationBucket {
+  count: number;
+  /** @deprecated 后端可不返回；前端用 count/totalTokens 计算 */
+  percentage?: number;
+}
+
+export interface HoldingDurationDistributionData {
+  totalTokens: number;
+  buckets: {
+    gt1Year: HoldingDurationBucket;
+    threeMonthsToOneYear: HoldingDurationBucket;
+    thirtyDaysToThreeMonths: HoldingDurationBucket;
+    sevenToThirtyDays: HoldingDurationBucket;
+    oneToSevenDays: HoldingDurationBucket;
+    lessThan24Hours: HoldingDurationBucket;
+  };
+}
+
 /** 当前总持有人数 */
 export const useCurrentHoldersCount = () => {
     const { http } = useAxios();
@@ -182,6 +201,19 @@ export const useHoldingBucketDistribution = () => {
     queryFn: async () => {
       const res = await http({ url: '/holdings/bucket-distribution' });
       return (res as { data: HoldingBucketDistributionData }).data;
+    },
+  });
+}
+
+/** 持猫时间分布（用于持猫时间分布圆环图） */
+export const useHoldingDurationDistribution = () => {
+  const { http } = useAxios();
+
+  return useQuery<HoldingDurationDistributionData>({
+    queryKey: ['getHoldingDurationDistribution'],
+    queryFn: async () => {
+      const res = await http({ url: '/holdings/duration-distribution' });
+      return (res as { data: HoldingDurationDistributionData }).data;
     },
   });
 }

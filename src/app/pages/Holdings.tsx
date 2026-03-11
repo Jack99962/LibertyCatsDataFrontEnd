@@ -3,7 +3,7 @@ import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, Cart
 import { useState } from 'react';
 import { useTimeRange } from '../contexts/TimeRangeContext';
 import { useLanguage } from '../contexts/LanguageContext';
-import { useAverageHolding, useCurrentHoldersCount, useHoldingsTopChange, useHoldingBucketChange, useHoldingBucketDistribution, type IndexTopTime } from '../../services';
+import { useAverageHolding, useCurrentHoldersCount, useHoldingsTopChange, useHoldingBucketChange, useHoldingBucketDistribution, useHoldingDurationDistribution, type IndexTopTime } from '../../services';
 
 // Mock data generator for holder trends based on time range
 const generateHolderTrendData = (range: '24H' | '7D' | '30D') => {
@@ -20,14 +20,14 @@ const generateHolderTrendData = (range: '24H' | '7D' | '30D') => {
   return result;
 };
 
-// Holding period distribution
-const holdingPeriodData = [
-  { name: '>1Y', value: 54.6, color: '#10b981' },
-  { name: '3M-1Y', value: 43.2, color: '#fb923c' },
-  { name: '30-3M', value: 1.0, color: '#f97316' },
-  { name: '7-30D', value: 1.2, color: '#0ea5e9' },
-  { name: '1-7D', value: 0.0, color: '#a78bfa' },
-  { name: '<24H', value: 0.7, color: '#fbbf24' },
+// 持猫时间分布：后端 bucket key -> 展示名 + 颜色（与圆环图一致）
+const HOLDING_DURATION_CONFIG = [
+  { key: 'gt1Year' as const, name: '>1Y', color: '#10b981' },
+  { key: 'threeMonthsToOneYear' as const, name: '3M-1Y', color: '#fb923c' },
+  { key: 'thirtyDaysToThreeMonths' as const, name: '30-3M', color: '#f97316' },
+  { key: 'sevenToThirtyDays' as const, name: '7-30D', color: '#0ea5e9' },
+  { key: 'oneToSevenDays' as const, name: '1-7D', color: '#a78bfa' },
+  { key: 'lessThan24Hours' as const, name: '<24H', color: '#fbbf24' },
 ];
 
 const HOLDER_BUCKET_CONFIG = [
@@ -63,6 +63,7 @@ export function Holdings() {
   const { data: holdingsTopChange } = useHoldingsTopChange(backendTime);
   const { data: holdingBucketChange } = useHoldingBucketChange(backendTime);
   const { data: holdingBucketDistribution } = useHoldingBucketDistribution();
+  const { data: holdingDurationDistribution } = useHoldingDurationDistribution();
   const holderTrendData = generateHolderTrendData(timeRange);
   const xAxisKey = timeRange === '24H' ? 'h' : 'day';
 
@@ -81,8 +82,32 @@ export function Holdings() {
     };
   });
 
+  // 持猫时间分布：由接口数据生成，无数据时用 0 占位
+  const durationTotalTokens =
+    holdingDurationDistribution?.totalTokens ??
+    HOLDING_DURATION_CONFIG.reduce((sum, item) => {
+      const bucket = holdingDurationDistribution?.buckets[item.key];
+      return sum + (bucket?.count ?? 0);
+    }, 0);
+
+  const holdingPeriodData = HOLDING_DURATION_CONFIG.map((item) => {
+    const bucket = holdingDurationDistribution?.buckets[item.key];
+    const count = bucket?.count ?? 0;
+    const percentage =
+      durationTotalTokens > 0
+        ? Number(((count / durationTotalTokens) * 100).toFixed(1))
+        : 0;
+    return {
+      name: item.name,
+      count,
+      percentage,
+      color: item.color,
+    };
+  });
+
 
   const [activeDistributionIndex, setActiveDistributionIndex] = useState<number | null>(null);
+  const [activeDurationIndex, setActiveDurationIndex] = useState<number | null>(null);
 
   const handleDistributionSliceClick = (_: unknown, index: number) => {
     setActiveDistributionIndex((prev) => (prev === index ? null : index));
@@ -90,6 +115,14 @@ export function Holdings() {
 
   const handleDistributionLegendClick = (index: number) => {
     setActiveDistributionIndex((prev) => (prev === index ? null : index));
+  };
+
+  const handleDurationSliceClick = (_: unknown, index: number) => {
+    setActiveDurationIndex((prev) => (prev === index ? null : index));
+  };
+
+  const handleDurationLegendClick = (index: number) => {
+    setActiveDurationIndex((prev) => (prev === index ? null : index));
   };
 
   const renderActiveDistributionShape = (props: any) => {
@@ -332,23 +365,50 @@ export function Holdings() {
                 innerRadius={35}
                 outerRadius={60}
                 paddingAngle={2}
-                dataKey="value"
+                dataKey="count"
+                activeIndex={activeDurationIndex ?? undefined}
+                activeShape={renderActiveDistributionShape}
+                onClick={handleDurationSliceClick}
               >
                 {holdingPeriodData.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={entry.color} />
                 ))}
+                <Label
+                  position="center"
+                  content={(props: any) => {
+                    const { viewBox } = props;
+                    if (!viewBox || activeDurationIndex === null) return null;
+                    const { cx, cy } = viewBox as { cx: number; cy: number };
+                    const activeItem = holdingPeriodData[activeDurationIndex];
+                    if (!activeItem) return null;
+                    return (
+                      <text
+                        x={cx}
+                        y={cy}
+                        textAnchor="middle"
+                        dominantBaseline="middle"
+                        className="text-xs font-bold fill-gray-800"
+                      >
+                        {activeItem.count}
+                      </text>
+                    );
+                  }}
+                />
               </Pie>
-              <Tooltip />
             </PieChart>
           </ResponsiveContainer>
           <div className="mt-2 space-y-1">
-            {holdingPeriodData.map((item) => (
-              <div key={item.name} className="flex items-center justify-between text-[10px]">
+            {holdingPeriodData.map((item, index) => (
+              <div
+                key={item.name}
+                className="flex items-center justify-between text-[10px] cursor-pointer"
+                onClick={() => handleDurationLegendClick(index)}
+              >
                 <div className="flex items-center gap-1">
                   <div className="w-2 h-2 rounded-full" style={{ backgroundColor: item.color }}></div>
                   <span>{item.name}</span>
                 </div>
-                <span className="font-semibold">{item.value}%</span>
+                <span className="font-semibold">{item.percentage}%</span>
               </div>
             ))}
           </div>
