@@ -22,12 +22,13 @@ const generateHolderTrendData = (range: '24H' | '7D' | '30D') => {
 
 // 持猫时间分布：后端 bucket key -> i18n key + 颜色（与圆环图一致）
 const HOLDING_DURATION_CONFIG = [
-  { key: 'gt1Year' as const, i18nKey: 'holdings.duration.gt1Year', color: '#10b981' },
-  { key: 'threeMonthsToOneYear' as const, i18nKey: 'holdings.duration.threeMonthsToOneYear', color: '#fb923c' },
-  { key: 'thirtyDaysToThreeMonths' as const, i18nKey: 'holdings.duration.thirtyDaysToThreeMonths', color: '#f97316' },
-  { key: 'sevenToThirtyDays' as const, i18nKey: 'holdings.duration.sevenToThirtyDays', color: '#0ea5e9' },
-  { key: 'oneToSevenDays' as const, i18nKey: 'holdings.duration.oneToSevenDays', color: '#a78bfa' },
-  { key: 'lessThan24Hours' as const, i18nKey: 'holdings.duration.lessThan24Hours', color: '#fbbf24' },
+  // 颜色与左侧“持猫党分布”保持一致（按同顺序取左侧配色）
+  { key: 'gt1Year' as const, i18nKey: 'holdings.duration.gt1Year', color: '#ff6900' },
+  { key: 'threeMonthsToOneYear' as const, i18nKey: 'holdings.duration.threeMonthsToOneYear', color: '#ff8f3d' },
+  { key: 'thirtyDaysToThreeMonths' as const, i18nKey: 'holdings.duration.thirtyDaysToThreeMonths', color: '#f04e23' },
+  { key: 'sevenToThirtyDays' as const, i18nKey: 'holdings.duration.sevenToThirtyDays', color: '#2a9d8f' },
+  { key: 'oneToSevenDays' as const, i18nKey: 'holdings.duration.oneToSevenDays', color: '#b36b00' },
+  { key: 'lessThan24Hours' as const, i18nKey: 'holdings.duration.lessThan24Hours', color: '#6a994e' },
 ];
 
 const HOLDER_BUCKET_CONFIG = [
