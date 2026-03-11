@@ -93,8 +93,24 @@ export function Activity() {
             <YAxis dataKey="price" tick={{ fontSize: 10 }} />
             <Tooltip
               cursor={{ strokeDasharray: '3 3' }}
-              formatter={(value: any) => [value, t('activity.price')]}
-              labelFormatter={(value: any) => formatTs(Number(value), true)}
+              content={({ active, payload }) => {
+                if (!active || !payload?.length) return null;
+                const p = payload[0]?.payload as { timestampMs?: number; price?: number } | undefined;
+                const ts = p?.timestampMs;
+                const price = p?.price;
+
+                return (
+                  <div className="grid min-w-[12rem] gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs shadow-xl">
+                    <div className="font-medium text-gray-900">{ts ? formatTs(ts, true) : '-'}</div>
+                    <div className="flex items-center justify-between gap-3">
+                      <span className="text-gray-500">{t('activity.price')}</span>
+                      <span className="font-mono font-medium tabular-nums text-gray-900">
+                        {typeof price === 'number' ? price.toLocaleString() : '-'}
+                      </span>
+                    </div>
+                  </div>
+                );
+              }}
             />
             <Scatter
               data={finalScatterData}
