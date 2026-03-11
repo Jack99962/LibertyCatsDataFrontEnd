@@ -23,6 +23,8 @@ export function Layout() {
     { code: 'ja', label: 'JP' },
   ];
 
+  const showTimeRangeSelector = location.pathname !== '/rankings';
+
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
       {/* Header */}
@@ -71,21 +73,25 @@ export function Layout() {
             </div>
           </div>
 
-          {/* Time Range Selector */}
-          <div className="flex gap-2 bg-gray-100 p-1 rounded-lg">
-            {timeRanges.map((range) => (
-              <button
-                key={range}
-                onClick={() => setTimeRange(range)}
-                className={`flex-1 py-2 rounded-md text-sm font-semibold transition-all ${timeRange === range
-                  ? 'bg-orange-500 text-white shadow-md'
-                  : 'text-gray-600 hover:text-gray-900'
-                  }`}
-              >
-                {range}
-              </button>
-            ))}
-          </div>
+          {showTimeRangeSelector && (
+            <>
+              {/* Time Range Selector */}
+              <div className="flex gap-2 bg-gray-100 p-1 rounded-lg">
+                {timeRanges.map((range) => (
+                  <button
+                    key={range}
+                    onClick={() => setTimeRange(range)}
+                    className={`flex-1 py-2 rounded-md text-sm font-semibold transition-all ${timeRange === range
+                      ? 'bg-orange-500 text-white shadow-md'
+                      : 'text-gray-600 hover:text-gray-900'
+                      }`}
+                  >
+                    {range}
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
         </div>
       </header>
 
