@@ -6,7 +6,7 @@ export const useAxios = () => {
   const http = useMemo(() => {
 
     const instance = axios.create({
-      baseURL: import.meta.env.MODE === "development" ? 'http://localhost:3000' : '/api',
+      baseURL: import.meta.env.MODE === "development" ? 'http://localhost:3001' : '/api',
       timeout: 1000,
     });
 
