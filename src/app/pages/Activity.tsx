@@ -94,7 +94,7 @@ export function Activity() {
         tokenIds.map(async (tokenId) => {
           try {
             const res = await http.get(`/nft/image/${tokenId}`);
-            const imageUrl = (res as { data?: { imageUrl?: string | null } })?.data?.imageUrl ?? null;
+            const imageUrl = (res as { data?: { tokenId?: string; url?: string | null } })?.data?.url ?? null;
             if (!cancelled) {
               setImageByTokenId((prev) => (prev[tokenId] === imageUrl ? prev : { ...prev, [tokenId]: imageUrl }));
             }
