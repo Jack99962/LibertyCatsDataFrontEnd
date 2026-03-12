@@ -7,7 +7,7 @@ export const useAxios = () => {
 
     const instance = axios.create({
       baseURL: import.meta.env.MODE === "development" ? 'http://localhost:3001' : '/api',
-      timeout: 1000,
+      timeout: 10000,
     });
 
     // 拦截器挂在 instance 上（不要挂全局 axios），避免重复注册
