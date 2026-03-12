@@ -138,7 +138,7 @@ export function Rankings() {
             <BarChart data={sendTop10} layout="vertical" margin={{ left: 0, right: 10 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
               <XAxis type="number" tick={{ fontSize: 10 }} />
-              <YAxis dataKey="address" type="category" tick={{ fontSize: 10 }} width={40} />
+              <YAxis dataKey="address" type="category" tick={{ fontSize: 10 }} width={40} interval={0} />
               <Tooltip />
               <Bar dataKey="count" fill="#fdba74" radius={[0, 4, 4, 0]} />
             </BarChart>
@@ -155,7 +155,7 @@ export function Rankings() {
             <BarChart data={receiveTop10} layout="vertical" margin={{ left: 0, right: 10 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
               <XAxis type="number" tick={{ fontSize: 10 }} />
-              <YAxis dataKey="address" type="category" tick={{ fontSize: 10 }} width={40} />
+              <YAxis dataKey="address" type="category" tick={{ fontSize: 10 }} width={40} interval={0} />
               <Tooltip />
               <Bar dataKey="count" fill="#10b981" radius={[0, 4, 4, 0]} />
             </BarChart>
