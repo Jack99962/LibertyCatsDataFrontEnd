@@ -73,10 +73,10 @@ export function Rankings() {
               <tr className="border-b border-gray-200">
                 <th className="py-2 text-left font-semibold text-gray-600">{t('rankings.rank')}</th>
                 <th className="py-2 text-left font-semibold text-gray-600">{t('rankings.address')}</th>
-                <th className="py-2 text-right font-semibold text-gray-600">{monthLabels.lastMonth}</th>
-                <th className="py-2 text-right font-semibold text-gray-600">{monthLabels.thisMonth}</th>
-                <th className="py-2 text-center font-semibold text-gray-600">变化</th>
-                <th className="py-2 text-right font-semibold text-gray-600">占比</th>
+                <th className="py-2 text-right font-semibold text-gray-600">{t('rankings.lastMonth')}</th>
+                <th className="py-2 text-right font-semibold text-gray-600">{t('rankings.thisMonth')}</th>
+                <th className="py-2 text-center font-semibold text-gray-600">{t('rankings.change')}</th>
+                <th className="py-2 text-right font-semibold text-gray-600">{t('rankings.proportion')}</th>
               </tr>
             </thead>
             <tbody>
