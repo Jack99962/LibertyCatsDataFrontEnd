@@ -1,6 +1,6 @@
 import { Users, TrendingUp, TrendingDown } from 'lucide-react';
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Sector, Label } from 'recharts';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useTimeRange } from '../contexts/TimeRangeContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useAverageHolding, useCurrentHoldersCount, useHoldingsTopChange, useHoldingBucketChange, useHoldingBucketDistribution, useHoldingDurationDistribution, type IndexTopTime } from '../../services';
@@ -110,6 +110,32 @@ export function Holdings() {
 
   const [activeDistributionIndex, setActiveDistributionIndex] = useState<number | null>(null);
   const [activeDurationIndex, setActiveDurationIndex] = useState<number | null>(null);
+  const didSetInitialDistribution = useRef(false);
+  const didSetInitialDuration = useRef(false);
+
+  // 默认选中持猫党分布中数值最大的那一项
+  useEffect(() => {
+    if (!didSetInitialDistribution.current && holdingDistribution.length > 0) {
+      const maxIndex = holdingDistribution.reduce(
+        (best, cur, i) => (cur.value > holdingDistribution[best].value ? i : best),
+        0
+      );
+      setActiveDistributionIndex(maxIndex);
+      didSetInitialDistribution.current = true;
+    }
+  }, [holdingDistribution]);
+
+  // 默认选中持猫时间分布中数值最大的那一项
+  useEffect(() => {
+    if (!didSetInitialDuration.current && holdingPeriodData.length > 0) {
+      const maxIndex = holdingPeriodData.reduce(
+        (best, cur, i) => (cur.percentage > holdingPeriodData[best].percentage ? i : best),
+        0
+      );
+      setActiveDurationIndex(maxIndex);
+      didSetInitialDuration.current = true;
+    }
+  }, [holdingPeriodData]);
 
   const handleDistributionSliceClick = (_: unknown, index: number) => {
     setActiveDistributionIndex((prev) => (prev === index ? null : index));
@@ -141,7 +167,7 @@ export function Holdings() {
             <Users className="w-5 h-5" />
             <span className="text-xs">{t('holdings.totalHolders')}</span>
           </div>
-          <div className="text-2xl font-bold text-gray-900">
+          <div className="text-2xl font-bold text-[#ff6900]">
             {currentHoldersCount ?? '-'}
           </div>
           <div className="flex items-center gap-1 text-xs font-medium text-red-600 mt-1">
@@ -154,7 +180,7 @@ export function Holdings() {
             <Users className="w-5 h-5" />
             <span className="text-xs">{t('holdings.avgHolding')}</span>
           </div>
-          <div className="text-2xl font-bold text-gray-900">
+          <div className="text-2xl font-bold text-[#ff6900]">
             {averageHolding?.toFixed(2) ?? '-'} {t('holdings.cats')}
           </div>
           <div className="flex items-center gap-1 text-xs font-medium text-green-600 mt-1">

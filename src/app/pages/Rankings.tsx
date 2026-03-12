@@ -66,7 +66,7 @@ export function Rankings() {
     <div className="space-y-4">
       {/* Top 30 Addresses Table */}
       <div className="bg-white rounded-2xl p-4 shadow-lg">
-        <h3 className="text-sm font-semibold mb-3 text-gray-700">{t('rankings.title')}</h3>
+        <h3 className="text-sm font-semibold mb-3 text-[#ff6900]">{t('rankings.title')}</h3>
         <div className="overflow-x-auto">
           <table className="w-full text-xs">
             <thead>
@@ -164,7 +164,7 @@ export function Rankings() {
       </div>
 
       {/* Data Source */}
-      <div className="bg-orange-50 rounded-2xl p-3 text-xs text-gray-600 text-center">
+      <div className="bg-orange-50 rounded-2xl p-3 text-xs text-[#ff6900] text-center">
         引用数据报告自 Polygonscan 以及 OKX Api
         <br />
         Jack-hu 制作，仅供参考

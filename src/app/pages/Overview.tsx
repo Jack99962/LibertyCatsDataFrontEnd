@@ -164,7 +164,7 @@ export function Overview() {
             <Bar
               yAxisId="volume"
               dataKey="volume"
-              fill="#d1d5db"
+              fill="#ff6900"
               opacity={0.7}
               barSize={10}
             />
@@ -251,7 +251,7 @@ function KPICard({
         {icon}
         <span className="text-xs">{label}</span>
       </div>
-      <div className="text-xl font-bold text-gray-900 mb-1">{value}</div>
+      <div className="text-xl font-bold text-[#ff6900] mb-1">{value}</div>
       {/* <div className={`flex items-center gap-1 text-xs font-medium ${trend === 'up' ? 'text-green-600' : 'text-red-600'}`}>
         {trend === 'up' ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
         <span>{change}</span>
