@@ -99,6 +99,8 @@ const translations = {
     'rankings.proportion': '占比',
     'rankings.volume': '交易额',
     'rankings.transactions': '交易次数',
+    'rankings.sendTop10': '发送TOP10',
+    'rankings.receiveTop10': '接收TOP10',
   },
   en: {
     // Header
@@ -191,6 +193,8 @@ const translations = {
     'rankings.proportion': 'Proportion',
     'rankings.volume': 'Volume',
     'rankings.transactions': 'Transactions',
+    'rankings.sendTop10': 'Send TOP10',
+    'rankings.receiveTop10': 'Receive TOP10',
   },
   ja: {
     // Header
@@ -282,6 +286,8 @@ const translations = {
     'rankings.proportion': '割合',
     'rankings.volume': '取引高',
     'rankings.transactions': '取引数',
+    'rankings.sendTop10': '送信TOP10',
+    'rankings.receiveTop10': '受信TOP10',
   },
 };
 

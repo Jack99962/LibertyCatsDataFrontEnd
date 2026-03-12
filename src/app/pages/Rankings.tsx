@@ -132,7 +132,7 @@ export function Rankings() {
         <div className="bg-white rounded-2xl p-4 shadow-lg">
           <div className="flex items-center gap-2 mb-3">
             <Send className="w-4 h-4 text-orange-500" />
-            <h3 className="text-xs font-semibold text-gray-700">发送TOP10</h3>
+            <h3 className="text-xs font-semibold text-gray-700">{t('rankings.sendTop10')}</h3>
           </div>
           <ResponsiveContainer width="100%" height={250}>
             <BarChart data={sendTop10} layout="vertical" margin={{ left: 0, right: 10 }}>
@@ -149,7 +149,7 @@ export function Rankings() {
         <div className="bg-white rounded-2xl p-4 shadow-lg">
           <div className="flex items-center gap-2 mb-3">
             <Download className="w-4 h-4 text-green-500" />
-            <h3 className="text-xs font-semibold text-gray-700">接收TOP10</h3>
+            <h3 className="text-xs font-semibold text-gray-700">{t('rankings.receiveTop10')}</h3>
           </div>
           <ResponsiveContainer width="100%" height={250}>
             <BarChart data={receiveTop10} layout="vertical" margin={{ left: 0, right: 10 }}>
