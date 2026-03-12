@@ -1,5 +1,9 @@
 {
     "compilerOptions": {
-        "jsx": "react-jsx" // 确保这里是 react-jsx 而不是 react
-    }
+        "jsx": "react-jsx",
+        "module": "ESNext",
+        "moduleResolution": "bundler",
+        "lib": ["ES2020", "DOM", "DOM.Iterable"]
+    },
+    "include": ["src"]
 }

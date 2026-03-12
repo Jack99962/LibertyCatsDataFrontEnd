@@ -4,8 +4,9 @@ import { useMemo } from 'react';
 export const useAxios = () => {
   // 只创建一次实例，避免 useEffect 依赖变化导致重复请求
   const http = useMemo(() => {
+
     const instance = axios.create({
-      baseURL: 'http://localhost:3000',
+      baseURL: import.meta.env.MODE === "development" ? 'http://localhost:3000' : '/api',
       timeout: 1000,
     });
 
