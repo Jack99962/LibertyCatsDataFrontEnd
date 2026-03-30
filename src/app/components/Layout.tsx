@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import { Outlet, Link, useLocation } from 'react-router';
-import { LayoutGrid, TrendingUp, Users, Crown, Globe } from 'lucide-react';
+import { LayoutGrid, TrendingUp, Users, Crown, Loader2 } from 'lucide-react';
 import { useTimeRange, TimeRange } from '../contexts/TimeRangeContext';
 import { useLanguage, Language } from '../contexts/LanguageContext';
 
@@ -97,7 +97,15 @@ export function Layout() {
 
       {/* Main Content */}
       <main className="px-4 py-4">
-        <Outlet />
+        <Suspense
+          fallback={
+            <div className="flex min-h-[40vh] items-center justify-center" aria-busy="true" aria-label="Loading">
+              <Loader2 className="h-8 w-8 animate-spin text-orange-500" />
+            </div>
+          }
+        >
+          <Outlet />
+        </Suspense>
       </main>
 
       {/* Bottom Navigation */}
