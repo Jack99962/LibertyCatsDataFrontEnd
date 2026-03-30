@@ -55,6 +55,9 @@ const translations = {
     'activity.transactionDistribution': '交易分布',
     'activity.top1': '最高价',
     'activity.bottom': '最低价',
+    'activity.scatterLoading': '加载中…',
+    'activity.scatterEmpty': '暂无成交数据',
+    'activity.scatterEmptyHint': '当前时间范围内没有记录，可尝试切换时间范围',
 
     // Holdings Page
     'holdings.title': '持仓分析',
@@ -149,6 +152,9 @@ const translations = {
     'activity.transactionDistribution': 'Transaction Distribution',
     'activity.top1': 'Top',
     'activity.bottom': 'Bottom',
+    'activity.scatterLoading': 'Loading…',
+    'activity.scatterEmpty': 'No transactions yet',
+    'activity.scatterEmptyHint': 'No records in this range — try another time range',
 
     // Holdings Page
     'holdings.title': 'Holdings Analysis',
@@ -242,6 +248,9 @@ const translations = {
     'activity.transactionDistribution': '取引分布',
     'activity.top1': '最高値',
     'activity.bottom': '最安値',
+    'activity.scatterLoading': '読み込み中…',
+    'activity.scatterEmpty': '取引データがありません',
+    'activity.scatterEmptyHint': 'この期間に記録がありません。期間を変更してください',
 
     // Holdings Page
     'holdings.title': '保有分析',

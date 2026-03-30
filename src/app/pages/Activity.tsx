@@ -1,4 +1,4 @@
-import { Clock } from 'lucide-react';
+import { ChartScatter, Clock, Loader2 } from 'lucide-react';
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ScatterChart, Scatter } from 'recharts';
 import { useEffect, useMemo, useState } from 'react';
 import { useTimeRange } from '../contexts/TimeRangeContext';
@@ -118,6 +118,7 @@ export function Activity() {
       timestampMs: item.timestampMs,
       price: item.price,
     })) ?? [];
+  const scatterHasData = finalScatterData.length > 0;
   const finalHeatmapData = heatmapData && heatmapData.length > 0 ? heatmapData : defaultHeatmapData;
 
   const locale = language === 'zh' ? 'zh-CN' : language === 'ja' ? 'ja-JP' : 'en-US';
@@ -140,45 +141,66 @@ export function Activity() {
       {/* Transaction Distribution */}
       <div className="bg-white rounded-2xl p-4 shadow-lg">
         <h3 className="text-sm font-semibold mb-3 text-gray-700">{t('activity.transactionDistribution')}</h3>
-        <ResponsiveContainer width="100%" height={250}>
-          <ScatterChart margin={{ top: 10, right: 10, bottom: 10, left: 10 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-            <XAxis
-              dataKey="timestampMs"
-              type="number"
-              tick={{ fontSize: 10 }}
-              domain={['auto', 'auto']}
-              tickFormatter={(value: number) => formatTs(value, false)}
-            />
-            <YAxis dataKey="price" tick={{ fontSize: 10 }} />
-            <Tooltip
-              cursor={{ strokeDasharray: '3 3' }}
-              content={({ active, payload }) => {
-                if (!active || !payload?.length) return null;
-                const p = payload[0]?.payload as { timestampMs?: number; price?: number } | undefined;
-                const ts = p?.timestampMs;
-                const price = p?.price;
+        {!scatterHasData ? (
+          <div
+            className="flex min-h-[250px] flex-col items-center justify-center rounded-xl border border-dashed border-orange-200/90 bg-gradient-to-b from-orange-50/60 to-amber-50/20 px-4 text-center"
+            role="status"
+            aria-live="polite"
+          >
+            {isScatterPending ? (
+              <>
+                <Loader2 className="mb-3 h-10 w-10 animate-spin text-orange-400" aria-hidden />
+                <p className="text-sm font-medium text-gray-600">{t('activity.scatterLoading')}</p>
+              </>
+            ) : (
+              <>
+                <div className="mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-orange-100/90 text-orange-500 shadow-inner">
+                  <ChartScatter className="h-7 w-7" strokeWidth={1.75} aria-hidden />
+                </div>
+                <p className="text-sm font-semibold text-gray-800">{t('activity.scatterEmpty')}</p>
+                <p className="mt-1 max-w-[18rem] text-xs leading-relaxed text-gray-500">
+                  {t('activity.scatterEmptyHint')}
+                </p>
+              </>
+            )}
+          </div>
+        ) : (
+          <ResponsiveContainer width="100%" height={250}>
+            <ScatterChart margin={{ top: 10, right: 10, bottom: 10, left: 10 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+              <XAxis
+                dataKey="timestampMs"
+                type="number"
+                tick={{ fontSize: 10 }}
+                domain={['auto', 'auto']}
+                tickFormatter={(value: number) => formatTs(value, false)}
+              />
+              <YAxis dataKey="price" tick={{ fontSize: 10 }} />
+              <Tooltip
+                cursor={{ strokeDasharray: '3 3' }}
+                content={({ active, payload }) => {
+                  if (!active || !payload?.length) return null;
+                  const p = payload[0]?.payload as { timestampMs?: number; price?: number } | undefined;
+                  const ts = p?.timestampMs;
+                  const price = p?.price;
 
-                return (
-                  <div className="grid min-w-[12rem] gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs shadow-xl">
-                    <div className="font-medium text-gray-900">{ts ? formatTs(ts, true) : '-'}</div>
-                    <div className="flex items-center justify-between gap-3">
-                      <span className="text-gray-500">{t('activity.price')}</span>
-                      <span className="font-mono font-medium tabular-nums text-gray-900">
-                        {typeof price === 'number' ? price.toLocaleString() : '-'}
-                      </span>
+                  return (
+                    <div className="grid min-w-[12rem] gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs shadow-xl">
+                      <div className="font-medium text-gray-900">{ts ? formatTs(ts, true) : '-'}</div>
+                      <div className="flex items-center justify-between gap-3">
+                        <span className="text-gray-500">{t('activity.price')}</span>
+                        <span className="font-mono font-medium tabular-nums text-gray-900">
+                          {typeof price === 'number' ? price.toLocaleString() : '-'}
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                );
-              }}
-            />
-            <Scatter
-              data={finalScatterData}
-              fill="#fb923c"
-              fillOpacity={0.6}
-            />
-          </ScatterChart>
-        </ResponsiveContainer>
+                  );
+                }}
+              />
+              <Scatter data={finalScatterData} fill="#fb923c" fillOpacity={0.6} />
+            </ScatterChart>
+          </ResponsiveContainer>
+        )}
         <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
           {cards.map((card) => {
             const imageUrl = imageByTokenId[card.tokenId];
