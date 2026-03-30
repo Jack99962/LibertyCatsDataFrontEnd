@@ -72,7 +72,7 @@ export function Activity() {
           key: 'bottom',
           label: t('activity.bottom'),
           tokenId: bottom?.tokenId ?? '',
-          priceLabel: typeof bottom?.price === 'number' ? `${bottom.price} USD` : isTopBottomPending ? '...' : '-',
+          priceLabel: typeof bottom?.price === 'number' ? `${bottom.price.toFixed(2)} USD` : isTopBottomPending ? '...' : '-',
         },
       ];
     },
