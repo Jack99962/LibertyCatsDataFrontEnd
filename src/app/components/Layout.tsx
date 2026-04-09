@@ -1,4 +1,4 @@
-import React, { Suspense } from 'react';
+import React, { Suspense, useState } from 'react';
 import { Outlet, Link, useLocation } from 'react-router';
 import { LayoutGrid, TrendingUp, Users, Crown, Loader2 } from 'lucide-react';
 import { useTimeRange, TimeRange } from '../contexts/TimeRangeContext';
@@ -8,6 +8,7 @@ export function Layout() {
   const location = useLocation();
   const { timeRange, setTimeRange } = useTimeRange();
   const { language, setLanguage, t } = useLanguage();
+  const [isSocialMenuOpen, setIsSocialMenuOpen] = useState(false);
 
   const navItems = [
     { path: '/', label: t('nav.overview'), icon: LayoutGrid },
@@ -22,6 +23,18 @@ export function Layout() {
     { code: 'en', label: 'EN' },
     { code: 'ja', label: 'JP' },
   ];
+  const socialLinks = [
+    { href: 'https://download.libertycats.app/', icon: '/app.png', label: 'Download App' },
+    { href: 'https://discord.gg/libertycatnft', icon: '/discord.png', label: 'Discord' },
+    { href: 'https://x.com/LibertyCats_APP', icon: '/x.png', label: 'X' },
+    {
+      href: 'https://www.xiaohongshu.com/user/profile/63427ad30000000018028cb6?xsec_token=YBPEda0wxDzdI-On3os7xOFBD3b_2ZDRnoR9Z795yVxu8=&xsec_source=app_share&xhsshare=CopyLink&appuid=5ef3fa4f000000000100699d&apptime=1734592688',
+      icon: '/red_book.png',
+      label: 'Xiaohongshu',
+    },
+    { href: 'https://weibo.com/u/7803636581', icon: '/wb.png', label: 'Weibo' },
+    { href: 'https://web3.okx.com/zh-hans/nft/collection/polygon/liberty-cats-2', icon: '/okx.png', label: 'OKX' },
+  ];
 
   const showTimeRangeSelector = location.pathname !== '/rankings';
 
@@ -31,8 +44,8 @@ export function Layout() {
       <header className="bg-white sticky top-0 z-10 shadow-sm border-b border-gray-100">
         <div className="px-4 py-4">
           {/* Title */}
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
+          <div className="flex items-start justify-between gap-2 mb-4">
+            <div className="flex items-center gap-2 min-w-0">
               {/* <div className="w-10 h-10 bg-gradient-to-br from-orange-400 to-orange-600 rounded-xl flex items-center justify-center shadow-lg shadow-orange-500/30">
                 <span className="text-xl">🐱</span>
               </div> */}
@@ -52,9 +65,67 @@ export function Layout() {
               </div>
             </div>
 
-            <div className="flex items-center gap-3">
+            <div className="flex gap-1 flex-col items-end shrink-0">
+              <div className="relative">
+                <div className="sm:hidden">
+                  <div className="flex items-center gap-1">
+                    {socialLinks.slice(0, 2).map((item) => (
+                      <a
+                        key={item.label}
+                        href={item.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={item.label}
+                        className="shrink-0 flex h-10 w-10 items-center justify-center rounded-lg active:scale-95 transition-transform hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400"
+                      >
+                        <img src={item.icon} className="w-5 h-5 object-cover" alt={item.label} />
+                      </a>
+                    ))}
+                    <button
+                      type="button"
+                      onClick={() => setIsSocialMenuOpen((prev) => !prev)}
+                      className="h-10 px-3 text-xs font-semibold text-gray-700 bg-gray-100 rounded-lg active:scale-95 transition-transform hover:bg-gray-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400"
+                    >
+                      更多
+                    </button>
+                  </div>
+                  {isSocialMenuOpen && (
+                    <div className="absolute left-0 mt-1 z-20 min-w-[150px] rounded-lg border border-gray-200 bg-white shadow-md">
+                      {socialLinks.slice(2).map((item) => (
+                        <a
+                          key={item.label}
+                          href={item.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          aria-label={item.label}
+                          onClick={() => setIsSocialMenuOpen(false)}
+                          className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                        >
+                          <img src={item.icon} className="w-4 h-4 object-cover" alt={item.label} />
+                          <span>{item.label}</span>
+                        </a>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                <div className="hidden sm:flex gap-1 justify-end">
+                  {socialLinks.map((item) => (
+                    <a
+                      key={item.label}
+                      href={item.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={item.label}
+                      className="shrink-0 flex h-10 w-10 items-center justify-center rounded-lg active:scale-95 transition-transform hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400"
+                    >
+                      <img src={item.icon} className="w-5 h-5 object-cover" alt={item.label} />
+                    </a>
+                  ))}
+                </div>
+              </div>
               {/* Language Selector */}
-              <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-0.5">
+              <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-0.5 self-start sm:self-auto">
                 {languages.map((lang) => (
                   <button
                     key={lang.code}
@@ -68,7 +139,6 @@ export function Layout() {
                   </button>
                 ))}
               </div>
-
 
             </div>
           </div>
