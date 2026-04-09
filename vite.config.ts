@@ -16,6 +16,9 @@ export default defineConfig({
             return 'react-core';
           }
         },
+        // 在文件名中加入时间戳，强制每次都不一样
+        entryFileNames: `assets/[name]-[hash]-${Date.now()}.js`,
+        chunkFileNames: `assets/[name]-[hash]-${Date.now()}.js`,
       },
     },
   },
