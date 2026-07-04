@@ -4,6 +4,25 @@ import { LayoutGrid, TrendingUp, Users, Crown, Loader2 } from 'lucide-react';
 import { useTimeRange, TimeRange } from '../contexts/TimeRangeContext';
 import { useLanguage, Language } from '../contexts/LanguageContext';
 
+type SocialLink = {
+  href: string;
+  icon: string;
+  label: string;
+};
+
+type WebkitMessageHandler = {
+  postMessage: (message: string) => void;
+};
+
+type AppBridgeWindow = Window & {
+  ReactNativeWebView?: {
+    postMessage: (message: string) => void;
+  };
+  webkit?: {
+    messageHandlers?: Record<string, WebkitMessageHandler | undefined>;
+  };
+};
+
 export function Layout() {
   const location = useLocation();
   const { timeRange, setTimeRange } = useTimeRange();
@@ -23,7 +42,7 @@ export function Layout() {
     { code: 'en', label: 'EN' },
     { code: 'ja', label: 'JP' },
   ];
-  const socialLinks = [
+  const socialLinks: SocialLink[] = [
     { href: 'https://download.libertycats.app/', icon: '/app.png', label: 'Download App' },
     { href: 'https://discord.gg/libertycatnft', icon: '/discord.png', label: 'Discord' },
     { href: 'https://x.com/LibertyCats_APP', icon: '/x.png', label: 'X' },
@@ -37,6 +56,79 @@ export function Layout() {
   ];
 
   const showTimeRangeSelector = location.pathname !== '/rankings';
+  const getAppBridge = () => {
+    const appWindow = typeof window !== 'undefined' ? (window as AppBridgeWindow) : undefined;
+    const webkitHandlers = appWindow?.webkit?.messageHandlers;
+    const iosMessageHandler = webkitHandlers
+      ? webkitHandlers.libertycats ?? webkitHandlers.webview ?? webkitHandlers.native ?? webkitHandlers.externalLink
+      : undefined;
+
+    return {
+      appWindow,
+      iosMessageHandler,
+      isInAppWebView: Boolean(appWindow?.ReactNativeWebView?.postMessage || iosMessageHandler?.postMessage),
+    };
+  };
+
+  const handleSocialLinkClick = (
+    event: React.MouseEvent<HTMLAnchorElement>,
+    item: SocialLink,
+  ) => {
+    const { appWindow, iosMessageHandler, isInAppWebView } = getAppBridge();
+
+    if (!isInAppWebView) {
+      return;
+    }
+
+    event.preventDefault();
+
+    const payload = JSON.stringify({
+      type: 'openExternalLink',
+      href: item.href,
+      label: item.label,
+    });
+
+    if (appWindow?.ReactNativeWebView?.postMessage) {
+      appWindow.ReactNativeWebView.postMessage(payload);
+      return;
+    }
+
+    iosMessageHandler?.postMessage(payload);
+  };
+
+  const renderSocialLink = (
+    item: SocialLink,
+    className: string,
+    imageClassName: string,
+    closeMenu = false,
+    showLabel = false,
+  ) => {
+    const content = (
+      <>
+        <img src={item.icon} className={imageClassName} alt={item.label} />
+        {showLabel ? <span>{item.label}</span> : null}
+      </>
+    );
+
+    return (
+      <a
+        key={item.label}
+        href={item.href}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={item.label}
+        onClick={(event) => {
+          handleSocialLinkClick(event, item);
+          if (closeMenu) {
+            setIsSocialMenuOpen(false);
+          }
+        }}
+        className={className}
+      >
+        {content}
+      </a>
+    );
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
@@ -69,18 +161,13 @@ export function Layout() {
               <div className="relative">
                 <div className="sm:hidden">
                   <div className="flex items-center gap-1">
-                    {socialLinks.slice(0, 2).map((item) => (
-                      <a
-                        key={item.label}
-                        href={item.href}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        aria-label={item.label}
-                        className="shrink-0 flex h-10 w-10 items-center justify-center rounded-lg active:scale-95 transition-transform hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400"
-                      >
-                        <img src={item.icon} className="w-5 h-5 object-cover" alt={item.label} />
-                      </a>
-                    ))}
+                    {socialLinks.slice(0, 2).map((item) =>
+                      renderSocialLink(
+                        item,
+                        'shrink-0 flex h-10 w-10 items-center justify-center rounded-lg active:scale-95 transition-transform hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400',
+                        'w-5 h-5 object-cover',
+                      ),
+                    )}
                     <button
                       type="button"
                       onClick={() => setIsSocialMenuOpen((prev) => !prev)}
@@ -91,37 +178,27 @@ export function Layout() {
                   </div>
                   {isSocialMenuOpen && (
                     <div className="absolute left-0 mt-1 z-20 min-w-[150px] rounded-lg border border-gray-200 bg-white shadow-md">
-                      {socialLinks.slice(2).map((item) => (
-                        <a
-                          key={item.label}
-                          href={item.href}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          aria-label={item.label}
-                          onClick={() => setIsSocialMenuOpen(false)}
-                          className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50"
-                        >
-                          <img src={item.icon} className="w-4 h-4 object-cover" alt={item.label} />
-                          <span>{item.label}</span>
-                        </a>
-                      ))}
+                      {socialLinks.slice(2).map((item) =>
+                        renderSocialLink(
+                          item,
+                          'flex w-full items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50',
+                          'w-4 h-4 object-cover',
+                          true,
+                          true,
+                        ),
+                      )}
                     </div>
                   )}
                 </div>
 
                 <div className="hidden sm:flex gap-1 justify-end">
-                  {socialLinks.map((item) => (
-                    <a
-                      key={item.label}
-                      href={item.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      aria-label={item.label}
-                      className="shrink-0 flex h-10 w-10 items-center justify-center rounded-lg active:scale-95 transition-transform hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400"
-                    >
-                      <img src={item.icon} className="w-5 h-5 object-cover" alt={item.label} />
-                    </a>
-                  ))}
+                  {socialLinks.map((item) =>
+                    renderSocialLink(
+                      item,
+                      'shrink-0 flex h-10 w-10 items-center justify-center rounded-lg active:scale-95 transition-transform hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400',
+                      'w-5 h-5 object-cover',
+                    ),
+                  )}
                 </div>
               </div>
               {/* Language Selector */}
