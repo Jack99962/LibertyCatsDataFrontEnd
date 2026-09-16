@@ -4,8 +4,50 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#f9fafb" />
   <title>LibertyCats Data Report</title>
   <link rel="icon" type="image/svg+xml" href="/logo.png">
+  <script>
+    // Apply before React/CSS paint to avoid a light-theme flash inside the WebView.
+    (function () {
+      var params = new URLSearchParams(window.location.search);
+      var savedTheme = null;
+      try { savedTheme = localStorage.getItem('liberty-cats-theme'); } catch (_) {}
+      var value = (params.get('theme') || params.get('thenme') || savedTheme || 'light').toLowerCase();
+      var theme = value === 'dark' ? 'dark' : 'light';
+      window.__LIBERTY_CATS_INITIAL_THEME__ = theme;
+      document.documentElement.classList.toggle('dark', theme === 'dark');
+      document.documentElement.dataset.theme = theme;
+      document.documentElement.style.colorScheme = theme;
+      document.querySelector('meta[name="theme-color"]').setAttribute('content', theme === 'dark' ? '#171819' : '#f9fafb');
+
+      var savedFontScale = null;
+      try { savedFontScale = localStorage.getItem('liberty-cats-font-scale'); } catch (_) {}
+      var requestedFontScale = Number(params.get('fontScale') || savedFontScale || 1);
+      var fontScale = requestedFontScale === 1.15 || requestedFontScale === 1.5 ? requestedFontScale : 1;
+      window.__LIBERTY_CATS_INITIAL_FONT_SCALE__ = fontScale;
+      document.documentElement.style.setProperty('--font-scale', String(fontScale));
+      document.documentElement.dataset.fontScale = String(fontScale);
+
+      // Expose the bridge immediately so native code can call it before React mounts.
+      function setFontScale(value) {
+        var nextScale = Number(value);
+        if (nextScale !== 1 && nextScale !== 1.15 && nextScale !== 1.5) return false;
+        window.__LIBERTY_CATS_INITIAL_FONT_SCALE__ = nextScale;
+        document.documentElement.style.setProperty('--font-scale', String(nextScale));
+        document.documentElement.dataset.fontScale = String(nextScale);
+        try { localStorage.setItem('liberty-cats-font-scale', String(nextScale)); } catch (_) {}
+        window.dispatchEvent(new CustomEvent('libertycats:font-scale-change', { detail: { fontScale: nextScale } }));
+        return true;
+      }
+      window.LibertyCatsFontScale = {
+        setFontScale: setFontScale,
+        getFontScale: function () { return Number(document.documentElement.dataset.fontScale) || 1; }
+      };
+      window.setFontScale = window.LibertyCatsFontScale.setFontScale;
+      window.getFontScale = window.LibertyCatsFontScale.getFontScale;
+    })();
+  </script>
   <script src="https://js.cdn.aliyun.dcloud.net.cn/dev/uni-app/uni.webview.1.5.2.js"></script>
 </head>
 

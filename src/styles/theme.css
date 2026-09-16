@@ -1,7 +1,8 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --font-size: 16px;
+  --font-scale: 1;
+  --font-size: calc(16px * var(--font-scale));
   --background: #ffffff;
   --foreground: oklch(0.145 0 0);
   --card: #ffffff;
@@ -42,11 +43,11 @@
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
+  --background: #171819;
   --foreground: oklch(0.985 0 0);
-  --card: oklch(0.145 0 0);
+  --card: #2b2c2e;
   --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.145 0 0);
+  --popover: #303134;
   --popover-foreground: oklch(0.985 0 0);
   --primary: oklch(0.985 0 0);
   --primary-foreground: oklch(0.205 0 0);
@@ -58,8 +59,10 @@
   --accent-foreground: oklch(0.985 0 0);
   --destructive: oklch(0.396 0.141 25.723);
   --destructive-foreground: oklch(0.637 0.237 25.331);
-  --border: oklch(0.269 0 0);
-  --input: oklch(0.269 0 0);
+  --border: #414246;
+  --input: #414246;
+  --input-background: #343538;
+  --switch-background: #4b505c;
   --ring: oklch(0.439 0 0);
   --font-weight-medium: 500;
   --font-weight-normal: 400;
@@ -126,6 +129,12 @@
 
   body {
     @apply bg-background text-foreground;
+    transition: background-color 180ms ease, color 180ms ease;
+  }
+
+  html, body, #root {
+    min-height: 100%;
+    background-color: var(--background);
   }
 
   /**
@@ -178,4 +187,30 @@
     font-weight: var(--font-weight-normal);
     line-height: 1.5;
   }
+}
+
+/* Keep these rules outside Tailwind's cascade layers. The existing pages use
+   fixed neutral utility classes, and unlayered theme rules must win over them. */
+.dark .bg-white { background-color: var(--card); }
+.dark .bg-gray-50 { background-color: var(--background); }
+.dark .bg-gray-100, .dark .bg-\[\#E5E5E5\] { background-color: #343538; }
+.dark .bg-gray-200 { background-color: #414246; }
+.dark .hover\:bg-gray-50:hover, .dark .hover\:bg-gray-100:hover { background-color: #353638; }
+.dark .hover\:bg-gray-200:hover { background-color: #414246; }
+.dark .text-black, .dark .text-gray-900, .dark .text-gray-800,
+.dark .text-\[\#261000\] { color: #f6f6f6; }
+.dark .text-gray-700, .dark .text-gray-600 { color: #dedede; }
+.dark .text-gray-500, .dark .text-gray-400, .dark .text-\[\#999999\] { color: #9b9b9e; }
+.dark .border-gray-100, .dark .border-gray-200, .dark .border-\[\#E4E4E4\] { border-color: var(--border); }
+.dark .bg-orange-50 { background-color: rgb(255 105 0 / 0.14); }
+.dark .shadow-lg, .dark .shadow-md, .dark .shadow-sm {
+  --tw-shadow-color: rgb(0 0 0 / 0.55);
+  box-shadow: 0 6px 18px rgb(0 0 0 / 0.28);
+}
+.dark .recharts-cartesian-grid line { stroke: #4a4b4f; }
+.dark .recharts-cartesian-axis-tick text { fill: #aaa; }
+.dark .recharts-default-tooltip {
+  background-color: var(--popover) !important;
+  border-color: var(--border) !important;
+  color: var(--popover-foreground) !important;
 }
