@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useCallback, useContext, useEffect, useState, ReactNode } from 'react';
 
 export type Language = 'zh' | 'en' | 'ja';
 
@@ -6,6 +6,34 @@ interface LanguageContextType {
   language: Language;
   setLanguage: (lang: Language) => void;
   t: (key: string) => string;
+}
+
+type LanguageBridge = {
+  setLanguage: (language: string) => boolean;
+  getLanguage: () => Language;
+};
+
+declare global {
+  interface Window {
+    LibertyCatsLanguage?: LanguageBridge;
+    setLanguage?: LanguageBridge['setLanguage'];
+    getLanguage?: LanguageBridge['getLanguage'];
+  }
+}
+
+const DEFAULT_LANGUAGE: Language = 'zh';
+
+function parseLanguage(value: unknown): Language | null {
+  return value === 'zh' || value === 'en' || value === 'ja' ? value : null;
+}
+
+function readInitialLanguage(): Language {
+  if (typeof window === 'undefined') return DEFAULT_LANGUAGE;
+
+  return (
+    parseLanguage(new URLSearchParams(window.location.search).get('language')) ??
+    DEFAULT_LANGUAGE
+  );
 }
 
 const translations = {
@@ -111,10 +139,10 @@ const translations = {
     'app.live': 'Live',
 
     // Navigation
-    'nav.overview': 'Overview',
-    'nav.activity': 'Activity',
-    'nav.holdings': 'Holdings',
-    'nav.rankings': 'Rankings',
+    'nav.overview': 'All',
+    'nav.activity': 'Market',
+    'nav.holdings': 'Mine',
+    'nav.rankings': 'Top',
 
     // Time Range
     'time.24h': '24H',
@@ -303,7 +331,44 @@ const translations = {
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [language, setLanguage] = useState<Language>('zh');
+  const [language, setLanguageState] = useState<Language>(readInitialLanguage);
+
+  const setLanguage = useCallback((nextLanguage: Language) => {
+    document.documentElement.lang = nextLanguage;
+    document.documentElement.dataset.language = nextLanguage;
+    setLanguageState(nextLanguage);
+    window.dispatchEvent(
+      new CustomEvent('libertycats:language-change', {
+        detail: { language: nextLanguage },
+      }),
+    );
+  }, []);
+
+  useEffect(() => {
+    document.documentElement.lang = language;
+    document.documentElement.dataset.language = language;
+
+    const bridge: LanguageBridge = {
+      setLanguage: (value) => {
+        const nextLanguage = parseLanguage(value);
+        if (!nextLanguage) return false;
+        setLanguage(nextLanguage);
+        return true;
+      },
+      getLanguage: () =>
+        parseLanguage(document.documentElement.dataset.language) ?? DEFAULT_LANGUAGE,
+    };
+
+    window.LibertyCatsLanguage = bridge;
+    window.setLanguage = bridge.setLanguage;
+    window.getLanguage = bridge.getLanguage;
+
+    return () => {
+      delete window.LibertyCatsLanguage;
+      delete window.setLanguage;
+      delete window.getLanguage;
+    };
+  }, [language, setLanguage]);
 
   const t = (key: string): string => {
     return translations[language][key] || key;
